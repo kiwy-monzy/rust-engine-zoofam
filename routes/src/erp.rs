@@ -417,7 +417,7 @@ async fn create_shipment(State(s): State<AppState>, Extension(c): Extension<Clai
     let v: models::erp::NewShipment = serde_json::from_value(header).map_err(|e| ApiError::new(StatusCode::BAD_REQUEST, e.to_string()))?;
     let ls: Vec<models::erp::NewSalesLine> = serde_json::from_value(lines).map_err(|e| ApiError::new(StatusCode::BAD_REQUEST, e.to_string()))?;
     let r = controller::erp::shipment_create(&s.pool, v, ls)?;
-    Ok((StatusCode::CREATED, Json(json!({"shipment": r})))
+    Ok((StatusCode::CREATED, Json(json!({"shipment": r}))))
 }
 async fn update_shipment(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewShipment>) -> ApiResult<Json<Value>> {
     need(&c, "commerce", "write")?;
