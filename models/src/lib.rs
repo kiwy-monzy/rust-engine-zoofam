@@ -3,12 +3,6 @@ pub mod fleet_events;
 pub mod erp;
 pub mod crm;
 
-// Backwards-compatible alias: the old `models::commerce` path now points to `models::erp`.
-// Use `models::erp` directly in all new code.
-pub mod commerce {
-    pub use super::erp::*;
-}
-
 use chrono::NaiveDateTime;
 use diesel::prelude::*;
 use serde::{Deserialize, Serialize};
