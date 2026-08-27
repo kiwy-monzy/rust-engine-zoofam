@@ -116,7 +116,7 @@ pub fn sales_delete(pool:&DbPool, id:&str)->Result<(),Error>{ let mut c=db::conn
 pub fn sales_line_update(pool:&DbPool, id:&str, patch: NewSalesLine)->Result<SalesLine,Error>{ let mut c=db::conn(pool)?; diesel::update(commerce_sales_lines::table.find(id)).set(patch).execute(&mut c)?; Ok(commerce_sales_lines::table.find(id).first(&mut c)?) }
 pub fn sales_line_delete(pool:&DbPool, id:&str)->Result<(),Error>{ let mut c=db::conn(pool)?; diesel::delete(commerce_sales_lines::table.find(id)).execute(&mut c)?; Ok(()) }
 
-pub fn shipments(pool:&DbPool)->Result<Vec<Shipment>,Error>{ let mut c=db::conn(pool)?; Ok(commerce_shipments::table.order(commerce_shipments::created_at.desc()).load(&mut c)?) }
+pub fn shipments(pool:&DbPool)->Result<Vec<Shipment>,Error>{ let mut c=db::conn(pool)?; Ok(commerce_shipments::table.order(commerce_shipments::shipped_at.desc()).load(&mut c)?) }
 pub fn shipment_update(pool:&DbPool, id:&str, patch: NewShipment)->Result<Shipment,Error>{ let mut c=db::conn(pool)?; diesel::update(commerce_shipments::table.find(id)).set(patch).execute(&mut c)?; Ok(commerce_shipments::table.find(id).first(&mut c)?) }
 pub fn shipment_delete(pool:&DbPool, id:&str)->Result<(),Error>{ let mut c=db::conn(pool)?; diesel::delete(commerce_shipments::table.find(id)).execute(&mut c)?; Ok(()) }
 
