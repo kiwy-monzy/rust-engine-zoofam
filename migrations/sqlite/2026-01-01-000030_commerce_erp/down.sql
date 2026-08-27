@@ -1,0 +1,16 @@
+DROP TABLE IF EXISTS commerce_expenses;
+DROP TABLE IF EXISTS commerce_assets;
+DROP TABLE IF EXISTS commerce_shipments;
+DROP TABLE IF EXISTS commerce_sales_lines;
+DROP TABLE IF EXISTS commerce_sales_orders;
+DROP TABLE IF EXISTS commerce_inventory_transactions;
+DROP TABLE IF EXISTS commerce_goods_receipt_lines;
+DROP TABLE IF EXISTS commerce_goods_receipts;
+DROP TABLE IF EXISTS commerce_purchase_order_lines;
+DROP TABLE IF EXISTS commerce_purchase_orders;
+DROP TABLE IF EXISTS commerce_procurement_lines;
+DROP TABLE IF EXISTS commerce_procurement_requests;
+DROP TABLE IF EXISTS commerce_products;
+DROP TABLE IF EXISTS commerce_suppliers;
+DROP TABLE IF EXISTS commerce_warehouses;
+DROP TABLE IF EXISTS commerce_units;
