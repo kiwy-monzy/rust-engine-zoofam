@@ -444,7 +444,7 @@ async fn get_asset(State(s): State<AppState>, Extension(c): Extension<Claims>, P
 async fn create_asset(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewAsset>) -> ApiResult<(StatusCode, Json<Value>)> {
     need(&c, "commerce", "write")?;
     let a = controller::erp::asset_create(&s.pool, v)?;
-    Ok((StatusCode::CREATED, Json(json!({"asset": a})))
+    Ok((StatusCode::CREATED, Json(json!({"asset": a}))))
 }
 async fn update_asset(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewAsset>) -> ApiResult<Json<Value>> {
     need(&c, "commerce", "write")?;
