@@ -1,0 +1,58 @@
+[workspace]
+members = [
+    "db",
+    "models",
+    "controller",
+    "auth",
+    "routes",
+    "gateway",
+    "maps",
+    "storage",
+    "search",
+    "fleet-icons",
+    "gateway-fleet",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+
+[workspace.dependencies]
+db = { path = "db", default-features = false }
+models = { path = "models", default-features = false }
+controller = { path = "controller", default-features = false }
+auth = { path = "auth" }
+routes = { path = "routes", default-features = false }
+maps = { path = "maps", default-features = false }
+storage = { path = "storage", default-features = false }
+search = { path = "search", default-features = false }
+fleet-icons = { path = "fleet-icons", default-features = false }
+applewallet = { path = "../vendor/applewallet" }
+fleet-vendor = { path = "../vendor/fleet", default-features = false, features = ["geometry"] }
+
+tantivy = "0.22"
+tantivy-jieba = "0.1"
+
+diesel = { version = "2.2", default-features = false, features = ["chrono", "r2d2"] }
+diesel_migrations = { version = "2.2", default-features = false }
+r2d2 = "0.8"
+dotenvy = "0.15"
+
+axum = { version = "0.7", features = ["multipart"] }
+tokio = { version = "1", features = ["rt-multi-thread", "macros", "net", "signal"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["trace", "fs"] }
+
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+uuid = { version = "1", features = ["v4", "serde"] }
+chrono = { version = "0.4", features = ["serde"] }
+jsonwebtoken = "9"
+argon2 = "0.5"
+password-hash = { version = "0.5", features = ["rand_core"] }
+rand_core = { version = "0.6", features = ["std"] }
+thiserror = "2"
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+ammonia = "4"
