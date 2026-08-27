@@ -386,7 +386,7 @@ async fn create_sales_line(State(s): State<AppState>, Extension(c): Extension<Cl
     need(&c, "commerce", "write")?;
     v.sales_order_id = id.clone();
     let l = controller::erp::sales_line_create(&s.pool, v)?;
-    Ok((StatusCode::CREATED, Json(json!({"line": l})))
+    Ok((StatusCode::CREATED, Json(json!({"line": l}))))
 }
 async fn update_sales_line(State(s): State<AppState>, Extension(c): Extension<Claims>, Path((id, line_id)): Path<(String, String)>, Json(v): Json<models::erp::NewSalesLine>) -> ApiResult<Json<Value>> {
     need(&c, "commerce", "write")?;
