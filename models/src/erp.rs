@@ -44,7 +44,7 @@ where D: Deserializer<'de> {
 #[derive(Debug, Clone, Queryable, Selectable, Identifiable, Serialize)]
 #[diesel(table_name = commerce_units)]
 pub struct Unit { pub id: String, pub name: String, pub symbol: String, pub created_at: NaiveDateTime, pub updated_at: NaiveDateTime }
-#[derive(Debug, Insertable, Deserialize)]
+#[derive(Debug, Insertable, Deserialize, AsChangeset)]
 #[diesel(table_name = commerce_units)]
 pub struct NewUnit { pub id: String, pub name: String, pub symbol: String }
 
