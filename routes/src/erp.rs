@@ -280,7 +280,7 @@ async fn create_po_line(State(s): State<AppState>, Extension(c): Extension<Claim
     need(&c, "commerce", "write")?;
     v.purchase_order_id = id.clone();
     let l = controller::erp::po_line_create(&s.pool, v)?;
-    Ok((StatusCode::CREATED, Json(json!({"line": l})))
+    Ok((StatusCode::CREATED, Json(json!({"line": l}))))
 }
 async fn update_po_line(State(s): State<AppState>, Extension(c): Extension<Claims>, Path((id, line_id)): Path<(String, String)>, Json(v): Json<models::erp::NewPurchaseOrderLine>) -> ApiResult<Json<Value>> {
     need(&c, "commerce", "write")?;
