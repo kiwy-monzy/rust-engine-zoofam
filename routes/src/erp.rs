@@ -471,7 +471,7 @@ async fn get_expense(State(s): State<AppState>, Extension(c): Extension<Claims>,
 async fn create_expense(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewExpense>) -> ApiResult<(StatusCode, Json<Value>)> {
     need(&c, "commerce", "write")?;
     let e = controller::erp::expense_create(&s.pool, v)?;
-    Ok((StatusCode::CREATED, Json(json!({"expense": e})))
+    Ok((StatusCode::CREATED, Json(json!({"expense": e}))))
 }
 async fn update_expense(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewExpense>) -> ApiResult<Json<Value>> {
     need(&c, "commerce", "write")?;
