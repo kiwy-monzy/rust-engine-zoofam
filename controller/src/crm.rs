@@ -70,5 +70,5 @@ pub fn quote_accept(pool:&DbPool, quote_id:&str)->Result<models::erp::SalesOrder
         )).execute(conn)?;
         Ok::<String, diesel::result::Error>(sid)
     })?;
-    let mut c2=db::conn(pool)?; let so: models::commerce::SalesOrder = commerce_sales_orders::table.find(&so_id).first(&mut c2)?; Ok(so)
+    let mut c2=db::conn(pool)?; let so: models::erp::SalesOrder = commerce_sales_orders::table.find(&so_id).first(&mut c2)?; Ok(so)
 }
