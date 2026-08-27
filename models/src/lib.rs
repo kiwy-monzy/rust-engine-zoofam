@@ -3,8 +3,8 @@ pub mod fleet_events;
 pub mod erp;
 pub mod crm;
 
-/// Backwards-compatible alias: old code referring to `models::commerce` still works.
-#[deprecated(note = "use `models::erp` instead — the commerce module was renamed to erp")]
+// Backwards-compatible alias: the old `models::commerce` path now points to `models::erp`.
+// Use `models::erp` directly in all new code.
 pub mod commerce {
     pub use super::erp::*;
 }
