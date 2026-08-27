@@ -1,11 +1,6 @@
 pub mod bootstrap;
 pub mod erp;
 pub mod crm;
-
-// Backwards-compatible alias: the old `controller::commerce` path now points to `controller::erp`.
-pub mod commerce {
-    pub use super::erp::*;
-}
 pub mod maps;
 pub mod permissions;
 pub mod release;
