@@ -238,7 +238,7 @@ async fn create_procurement_line(State(s): State<AppState>, Extension(c): Extens
     need(&c, "commerce", "write")?;
     v.procurement_id = id.clone();
     let l = controller::erp::procurement_line_create(&s.pool, v)?;
-    Ok((StatusCode::CREATED, Json(json!({"line": l})))
+    Ok((StatusCode::CREATED, Json(json!({"line": l}))))
 }
 
 // ============================================================================
