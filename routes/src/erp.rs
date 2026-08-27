@@ -362,7 +362,7 @@ async fn get_sales(State(s): State<AppState>, Extension(c): Extension<Claims>, P
 async fn create_sales(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewSalesOrder>) -> ApiResult<(StatusCode, Json<Value>)> {
     need(&c, "commerce", "write")?;
     let o = controller::erp::sales_create(&s.pool, v)?;
-    Ok((StatusCode::CREATED, Json(json!({"order": o})))
+    Ok((StatusCode::CREATED, Json(json!({"order": o}))))
 }
 async fn update_sales(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewSalesOrder>) -> ApiResult<Json<Value>> {
     need(&c, "commerce", "write")?;
