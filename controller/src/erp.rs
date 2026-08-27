@@ -83,3 +83,44 @@ pub fn asset_create(pool:&DbPool, mut v: NewAsset)->Result<Asset,Error>{
 pub fn expenses(pool:&DbPool)->Result<Vec<Expense>,Error>{ let mut c=db::conn(pool)?; Ok(commerce_expenses::table.order(commerce_expenses::created_at.desc()).load(&mut c)?) }
 pub fn expense_create(pool:&DbPool, mut v: NewExpense)->Result<Expense,Error>{ if v.id.is_empty(){v.id=nid();} if v.expense_number.is_empty(){v.expense_number=format!("EXP-{}", &v.id[..8]);} let mut c=db::conn(pool)?; diesel::insert_into(commerce_expenses::table).values(&v).execute(&mut c)?; Ok(commerce_expenses::table.find(&v.id).first(&mut c)?) }
 pub fn expense_delete(pool:&DbPool, id:&str)->Result<(),Error>{ let mut c=db::conn(pool)?; diesel::delete(commerce_expenses::table.find(id)).execute(&mut c)?; Ok(()) }
+
+// =====================================================
+// Full CRUD additions (update / delete / list / get-one)
+// =====================================================
+
+pub fn unit_update(pool:&DbPool, id:&str, patch: NewUnit)->Result<Unit,Error>{ let mut c=db::conn(pool)?; diesel::update(commerce_units::table.find(id)).set((patch, commerce_units::updated_at.eq(now()))).execute(&mut c)?; Ok(commerce_units::table.find(id).first(&mut c)?) }
+pub fn unit_delete(pool:&DbPool, id:&str)->Result<(),Error>{ let mut c=db::conn(pool)?; diesel::delete(commerce_units::table.find(id)).execute(&mut c)?; Ok(()) }
+
+pub fn warehouse_update(pool:&DbPool, id:&str, patch: NewWarehouse)->Result<Warehouse,Error>{ let mut c=db::conn(pool)?; diesel::update(commerce_warehouses::table.find(id)).set((patch, commerce_warehouses::updated_at.eq(now()))).execute(&mut c)?; Ok(commerce_warehouses::table.find(id).first(&mut c)?) }
+pub fn warehouse_delete(pool:&DbPool, id:&str)->Result<(),Error>{ let mut c=db::conn(pool)?; diesel::delete(commerce_warehouses::table.find(id)).execute(&mut c)?; Ok(()) }
+
+pub fn supplier_update(pool:&DbPool, id:&str, patch: NewSupplier)->Result<Supplier,Error>{ let mut c=db::conn(pool)?; diesel::update(commerce_suppliers::table.find(id)).set((patch, commerce_suppliers::updated_at.eq(now()))).execute(&mut c)?; Ok(commerce_suppliers::table.find(id).first(&mut c)?) }
+pub fn supplier_delete(pool:&DbPool, id:&str)->Result<(),Error>{ let mut c=db::conn(pool)?; diesel::delete(commerce_suppliers::table.find(id)).execute(&mut c)?; Ok(()) }
+
+pub fn procurement_update(pool:&DbPool, id:&str, patch: NewProcurement)->Result<ProcurementRequest,Error>{ let mut c=db::conn(pool)?; diesel::update(commerce_procurement_requests::table.find(id)).set((patch, commerce_procurement_requests::updated_at.eq(now()))).execute(&mut c)?; Ok(commerce_procurement_requests::table.find(id).first(&mut c)?) }
+pub fn procurement_delete(pool:&DbPool, id:&str)->Result<(),Error>{ let mut c=db::conn(pool)?; diesel::delete(commerce_procurement_requests::table.find(id)).execute(&mut c)?; Ok(()) }
+pub fn procurement_lines(pool:&DbPool, pr:&str)->Result<Vec<ProcurementLine>,Error>{ let mut c=db::conn(pool)?; Ok(commerce_procurement_lines::table.filter(commerce_procurement_lines::procurement_id.eq(pr)).load(&mut c)?) }
+pub fn procurement_line_create(pool:&DbPool, mut v: NewProcurementLine)->Result<ProcurementLine,Error>{ if v.id.is_empty(){v.id=nid();} let mut c=db::conn(pool)?; diesel::insert_into(commerce_procurement_lines::table).values(&v).execute(&mut c)?; Ok(commerce_procurement_lines::table.find(&v.id).first(&mut c)?) }
+
+pub fn po_update(pool:&DbPool, id:&str, patch: NewPurchaseOrder)->Result<PurchaseOrder,Error>{ let mut c=db::conn(pool)?; diesel::update(commerce_purchase_orders::table.find(id)).set((patch, commerce_purchase_orders::updated_at.eq(now()))).execute(&mut c)?; Ok(commerce_purchase_orders::table.find(id).first(&mut c)?) }
+pub fn po_delete(pool:&DbPool, id:&str)->Result<(),Error>{ let mut c=db::conn(pool)?; diesel::delete(commerce_purchase_orders::table.find(id)).execute(&mut c)?; Ok(()) }
+pub fn po_line_update(pool:&DbPool, id:&str, patch: NewPurchaseOrderLine)->Result<PurchaseOrderLine,Error>{ let mut c=db::conn(pool)?; diesel::update(commerce_purchase_order_lines::table.find(id)).set(patch).execute(&mut c)?; Ok(commerce_purchase_order_lines::table.find(id).first(&mut c)?) }
+pub fn po_line_delete(pool:&DbPool, id:&str)->Result<(),Error>{ let mut c=db::conn(pool)?; diesel::delete(commerce_purchase_order_lines::table.find(id)).execute(&mut c)?; Ok(()) }
+
+pub fn receipt_delete(pool:&DbPool, id:&str)->Result<(),Error>{ let mut c=db::conn(pool)?; diesel::delete(commerce_goods_receipts::table.find(id)).execute(&mut c)?; Ok(()) }
+pub fn receipt_lines(pool:&DbPool, pr:&str)->Result<Vec<GoodsReceiptLine>,Error>{ let mut c=db::conn(pool)?; Ok(commerce_goods_receipt_lines::table.filter(commerce_goods_receipt_lines::receipt_id.eq(pr)).load(&mut c)?) }
+pub fn receipt_line_create(pool:&DbPool, mut v: NewGoodsReceiptLine)->Result<GoodsReceiptLine,Error>{ if v.id.is_empty(){v.id=nid();} let mut c=db::conn(pool)?; diesel::insert_into(commerce_goods_receipt_lines::table).values(&v).execute(&mut c)?; Ok(commerce_goods_receipt_lines::table.find(&v.id).first(&mut c)?) }
+
+pub fn sales_update(pool:&DbPool, id:&str, patch: NewSalesOrder)->Result<SalesOrder,Error>{ let mut c=db::conn(pool)?; diesel::update(commerce_sales_orders::table.find(id)).set((patch, commerce_sales_orders::updated_at.eq(now()))).execute(&mut c)?; Ok(commerce_sales_orders::table.find(id).first(&mut c)?) }
+pub fn sales_delete(pool:&DbPool, id:&str)->Result<(),Error>{ let mut c=db::conn(pool)?; diesel::delete(commerce_sales_orders::table.find(id)).execute(&mut c)?; Ok(()) }
+pub fn sales_line_update(pool:&DbPool, id:&str, patch: NewSalesLine)->Result<SalesLine,Error>{ let mut c=db::conn(pool)?; diesel::update(commerce_sales_lines::table.find(id)).set(patch).execute(&mut c)?; Ok(commerce_sales_lines::table.find(id).first(&mut c)?) }
+pub fn sales_line_delete(pool:&DbPool, id:&str)->Result<(),Error>{ let mut c=db::conn(pool)?; diesel::delete(commerce_sales_lines::table.find(id)).execute(&mut c)?; Ok(()) }
+
+pub fn shipments(pool:&DbPool)->Result<Vec<Shipment>,Error>{ let mut c=db::conn(pool)?; Ok(commerce_shipments::table.order(commerce_shipments::created_at.desc()).load(&mut c)?) }
+pub fn shipment_update(pool:&DbPool, id:&str, patch: NewShipment)->Result<Shipment,Error>{ let mut c=db::conn(pool)?; diesel::update(commerce_shipments::table.find(id)).set(patch).execute(&mut c)?; Ok(commerce_shipments::table.find(id).first(&mut c)?) }
+pub fn shipment_delete(pool:&DbPool, id:&str)->Result<(),Error>{ let mut c=db::conn(pool)?; diesel::delete(commerce_shipments::table.find(id)).execute(&mut c)?; Ok(()) }
+
+pub fn asset_update(pool:&DbPool, id:&str, patch: NewAsset)->Result<Asset,Error>{ let mut c=db::conn(pool)?; diesel::update(commerce_assets::table.find(id)).set((patch, commerce_assets::updated_at.eq(now()))).execute(&mut c)?; Ok(commerce_assets::table.find(id).first(&mut c)?) }
+pub fn asset_delete(pool:&DbPool, id:&str)->Result<(),Error>{ let mut c=db::conn(pool)?; diesel::delete(commerce_assets::table.find(id)).execute(&mut c)?; Ok(()) }
+
+pub fn expense_update(pool:&DbPool, id:&str, patch: NewExpense)->Result<Expense,Error>{ let mut c=db::conn(pool)?; diesel::update(commerce_expenses::table.find(id)).set((patch, commerce_expenses::updated_at.eq(now()))).execute(&mut c)?; Ok(commerce_expenses::table.find(id).first(&mut c)?) }
