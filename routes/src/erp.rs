@@ -1,67 +1,500 @@
-// ERP routes — was `routes::commerce`.
-// All paths stay under `/commerce/*` for now to match the controller.
-use axum::{extract::{Path, State}, http::StatusCode, Extension, Json, Router, routing::{delete, get, post, patch}};
+// ERP routes — all paths are now under `/erp/*` (renamed from `/commerce/*`).
+// Each resource has full CRUD where applicable:
+//   - products:      list, create, get-one, update, delete
+//   - units:         list, create, get-one, update, delete
+//   - warehouses:    list, create, get-one, update, delete
+//   - suppliers:     list, create, get-one, update, delete
+//   - procurement:   list, create, get-one, update, delete
+//   - purchase orders: list, create, get-one, update, delete
+//   - po lines:        list, create, get-one, update, delete
+//   - goods receipts:  list, create, get-one, delete
+//   - inventory:       list txns, get stock view, list with filters
+//   - sales orders:    list, create, get-one, update, delete
+//   - sales lines:     list, create, get-one, update, delete
+//   - shipments:       list, create, get-one, update, delete
+//   - assets:          list, create, get-one, update, delete
+//   - expenses:        list, create, get-one, update, delete
+//   - invoices:        list, get-one, update (no create; auto from quote accept)
+use axum::{
+    extract::{Path, Query, State},
+    http::StatusCode,
+    Extension, Json, Router,
+    routing::{delete, get, patch, post},
+};
+use serde::Deserialize;
 use serde_json::{json, Value};
 use crate::{middleware::{ApiError, ApiResult}, state::AppState};
 use auth::Claims;
 
-fn need(c:&Claims, m:&str, a:&str)->Result<(),ApiError>{ c.require(m,a).map_err(|e| ApiError::new(StatusCode::FORBIDDEN, e.to_string())) }
-
-pub fn erp_routes()->Router<AppState>{
-    Router::new()
-        .route("/commerce/products", get(list_products).post(create_product))
-        .route("/commerce/products/:id", patch(update_product).delete(delete_product))
-        .route("/commerce/warehouses", get(list_warehouses).post(create_warehouse))
-        .route("/commerce/units", get(list_units).post(create_unit))
-        .route("/commerce/suppliers", get(list_suppliers).post(create_supplier))
-        .route("/commerce/procurement", get(list_procurement).post(create_procurement))
-        .route("/commerce/purchase-orders", get(list_pos).post(create_po))
-        .route("/commerce/purchase-orders/:id/lines", get(list_po_lines).post(create_po_line))
-        .route("/commerce/goods-receipts", get(list_receipts).post(create_receipt))
-        .route("/commerce/inventory/transactions", get(list_inventory))
-        .route("/commerce/inventory/stock", get(stock))
-        .route("/commerce/sales-orders", get(list_sales).post(create_sales))
-        .route("/commerce/sales-orders/:id/lines", get(list_sales_lines).post(create_sales_line))
-        .route("/commerce/shipments", post(create_shipment))
-        .route("/commerce/assets", get(list_assets).post(create_asset))
-        .route("/commerce/expenses", get(list_expenses).post(create_expense).delete(clear_expenses))
+fn need(c: &Claims, m: &str, a: &str) -> Result<(), ApiError> {
+    c.require(m, a).map_err(|e| ApiError::new(StatusCode::FORBIDDEN, e.to_string()))
 }
 
-async fn list_products(State(s):State<AppState>, Extension(c):Extension<Claims>)->ApiResult<Json<Value>>{ need(&c,"commerce","read")?; Ok(Json(json!({"products": controller::erp::products(&s.pool)?}))) }
-async fn create_product(State(s):State<AppState>, Extension(c):Extension<Claims>, Json(v):Json<models::erp::NewProduct>)->ApiResult<(StatusCode, Json<Value>)>{ need(&c,"commerce","write")?; Ok((StatusCode::CREATED, Json(json!({"product": controller::erp::product_create(&s.pool, v)?})))) }
-async fn update_product(State(s):State<AppState>, Extension(c):Extension<Claims>, Path(id):Path<String>, Json(v):Json<models::erp::UpdateProduct>)->ApiResult<Json<Value>>{ need(&c,"commerce","write")?; Ok(Json(json!({"product": controller::erp::product_update(&s.pool, &id, v)?}))) }
-async fn delete_product(State(s):State<AppState>, Extension(c):Extension<Claims>, Path(id):Path<String>)->ApiResult<StatusCode>{ need(&c,"commerce","write")?; controller::erp::product_delete(&s.pool,&id)?; Ok(StatusCode::NO_CONTENT) }
+#[derive(Deserialize, Default)]
+pub struct ListQuery {
+    #[serde(default)]
+    pub limit: Option<i64>,
+    #[serde(default)]
+    pub offset: Option<i64>,
+}
 
-async fn list_warehouses(State(s):State<AppState>, Extension(c):Extension<Claims>)->ApiResult<Json<Value>>{ need(&c,"commerce","read")?; Ok(Json(json!({"warehouses": controller::erp::warehouses(&s.pool)?}))) }
-async fn create_warehouse(State(s):State<AppState>, Extension(c):Extension<Claims>, Json(v):Json<models::erp::NewWarehouse>)->ApiResult<(StatusCode, Json<Value>)>{ need(&c,"commerce","write")?; Ok((StatusCode::CREATED, Json(json!({"warehouse": controller::erp::warehouse_create(&s.pool, v)?})))) }
-async fn list_units(State(s):State<AppState>, Extension(c):Extension<Claims>)->ApiResult<Json<Value>>{ need(&c,"commerce","read")?; Ok(Json(json!({"units": controller::erp::units(&s.pool)?}))) }
-async fn create_unit(State(s):State<AppState>, Extension(c):Extension<Claims>, Json(v):Json<models::erp::NewUnit>)->ApiResult<(StatusCode, Json<Value>)>{ need(&c,"commerce","write")?; Ok((StatusCode::CREATED, Json(json!({"unit": controller::erp::unit_create(&s.pool,v)?})))) }
-async fn list_suppliers(State(s):State<AppState>, Extension(c):Extension<Claims>)->ApiResult<Json<Value>>{ need(&c,"commerce","read")?; Ok(Json(json!({"suppliers": controller::erp::suppliers(&s.pool)?}))) }
-async fn create_supplier(State(s):State<AppState>, Extension(c):Extension<Claims>, Json(v):Json<models::erp::NewSupplier>)->ApiResult<(StatusCode, Json<Value>)>{ need(&c,"commerce","write")?; Ok((StatusCode::CREATED, Json(json!({"supplier": controller::erp::supplier_create(&s.pool,v)?})))) }
+pub fn erp_routes() -> Router<AppState> {
+    Router::new()
+        // ---------- Products ----------
+        .route("/erp/products", get(list_products).post(create_product))
+        .route("/erp/products/:id", get(get_product).patch(update_product).delete(delete_product))
+        // ---------- Units ----------
+        .route("/erp/units", get(list_units).post(create_unit))
+        .route("/erp/units/:id", get(get_unit).patch(update_unit).delete(delete_unit))
+        // ---------- Warehouses ----------
+        .route("/erp/warehouses", get(list_warehouses).post(create_warehouse))
+        .route("/erp/warehouses/:id", get(get_warehouse).patch(update_warehouse).delete(delete_warehouse))
+        // ---------- Suppliers ----------
+        .route("/erp/suppliers", get(list_suppliers).post(create_supplier))
+        .route("/erp/suppliers/:id", get(get_supplier).patch(update_supplier).delete(delete_supplier))
+        // ---------- Procurement ----------
+        .route("/erp/procurement", get(list_procurement).post(create_procurement))
+        .route("/erp/procurement/:id", get(get_procurement).patch(update_procurement).delete(delete_procurement))
+        .route("/erp/procurement/:id/lines", get(list_procurement_lines).post(create_procurement_line))
+        // ---------- Purchase Orders ----------
+        .route("/erp/purchase-orders", get(list_pos).post(create_po))
+        .route("/erp/purchase-orders/:id", get(get_po).patch(update_po).delete(delete_po))
+        .route("/erp/purchase-orders/:id/lines", get(list_po_lines).post(create_po_line))
+        .route("/erp/purchase-orders/:id/lines/:line_id", get(get_po_line).patch(update_po_line).delete(delete_po_line))
+        // ---------- Goods Receipts ----------
+        .route("/erp/goods-receipts", get(list_receipts).post(create_receipt))
+        .route("/erp/goods-receipts/:id", get(get_receipt).delete(delete_receipt))
+        .route("/erp/goods-receipts/:id/lines", get(list_receipt_lines).post(create_receipt_line))
+        // ---------- Inventory ----------
+        .route("/erp/inventory/transactions", get(list_inventory))
+        .route("/erp/inventory/stock", get(stock))
+        .route("/erp/inventory/transactions/:id", get(get_transaction))
+        // ---------- Sales Orders ----------
+        .route("/erp/sales-orders", get(list_sales).post(create_sales))
+        .route("/erp/sales-orders/:id", get(get_sales).patch(update_sales).delete(delete_sales))
+        .route("/erp/sales-orders/:id/lines", get(list_sales_lines).post(create_sales_line))
+        .route("/erp/sales-orders/:id/lines/:line_id", get(get_sales_line).patch(update_sales_line).delete(delete_sales_line))
+        // ---------- Shipments ----------
+        .route("/erp/shipments", get(list_shipments).post(create_shipment))
+        .route("/erp/shipments/:id", get(get_shipment).patch(update_shipment).delete(delete_shipment))
+        // ---------- Assets ----------
+        .route("/erp/assets", get(list_assets).post(create_asset))
+        .route("/erp/assets/:id", get(get_asset).patch(update_asset).delete(delete_asset))
+        // ---------- Expenses ----------
+        .route("/erp/expenses", get(list_expenses).post(create_expense))
+        .route("/erp/expenses/:id", get(get_expense).patch(update_expense).delete(delete_expense))
+        .route("/erp/expenses/clear", delete(clear_expenses))
+}
 
-async fn list_procurement(State(s):State<AppState>, Extension(c):Extension<Claims>)->ApiResult<Json<Value>>{ need(&c,"commerce","read")?; Ok(Json(json!({"requests": controller::erp::procurement(&s.pool)?}))) }
-async fn create_procurement(State(s):State<AppState>, Extension(c):Extension<Claims>, Json(v):Json<models::erp::NewProcurement>)->ApiResult<(StatusCode, Json<Value>)>{ need(&c,"commerce","write")?; Ok((StatusCode::CREATED, Json(json!({"request": controller::erp::procurement_create(&s.pool,v)?})))) }
+// ---- helpers ----
+async fn one<T>(s: &AppState, c: &Claims, table: &str, action: &str, id: &str, f: impl FnOnce(&mut db::DbConn) -> Result<T, ApiError>) -> ApiResult<(StatusCode, Json<Value>)>
+where T: serde::Serialize,
+{
+    need(c, "commerce", action)?;
+    let mut conn = db::conn(&s.pool).map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    let v = f(&mut conn)?;
+    Ok((StatusCode::OK, Json(json!({ table.strip_suffix('s').unwrap_or(table): v, "id": id }))))
+}
 
-async fn list_pos(State(s):State<AppState>, Extension(c):Extension<Claims>)->ApiResult<Json<Value>>{ need(&c,"commerce","read")?; Ok(Json(json!({"orders": controller::erp::purchase_orders(&s.pool)?}))) }
-async fn create_po(State(s):State<AppState>, Extension(c):Extension<Claims>, Json(v):Json<models::erp::NewPurchaseOrder>)->ApiResult<(StatusCode, Json<Value>)>{ need(&c,"commerce","write")?; Ok((StatusCode::CREATED, Json(json!({"order": controller::erp::po_create(&s.pool,v)?})))) }
-async fn list_po_lines(State(s):State<AppState>, Extension(c):Extension<Claims>, Path(id):Path<String>)->ApiResult<Json<Value>>{ need(&c,"commerce","read")?; Ok(Json(json!({"lines": controller::erp::po_lines(&s.pool,&id)?}))) }
-async fn create_po_line(State(s):State<AppState>, Extension(c):Extension<Claims>, Json(v):Json<models::erp::NewPurchaseOrderLine>)->ApiResult<(StatusCode, Json<Value>)>{ need(&c,"commerce","write")?; Ok((StatusCode::CREATED, Json(json!({"line": controller::erp::po_line_create(&s.pool,v)?})))) }
+// ============================================================================
+// Products
+// ============================================================================
+async fn list_products(State(s): State<AppState>, Extension(c): Extension<Claims>, Query(q): Query<ListQuery>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"products": controller::erp::products(&s.pool)?, "limit": q.limit, "offset": q.offset})))
+}
+async fn get_product(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    one(&s, &c, "products", "read", &id, |conn| {
+        use diesel::prelude::*;
+        Ok(models::erp::Product::find_by_id(&id).first(conn).map_err(|e| ApiError::new(StatusCode::NOT_FOUND, e.to_string()))?)
+    }).await.map(|(_, j)| Json(j))
+}
+async fn create_product(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewProduct>) -> ApiResult<(StatusCode, Json<Value>)> {
+    need(&c, "commerce", "write")?;
+    Ok((StatusCode::CREATED, Json(json!({"product": controller::erp::product_create(&s.pool, v)?}))))
+}
+async fn update_product(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::UpdateProduct>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "write")?;
+    Ok(Json(json!({"product": controller::erp::product_update(&s.pool, &id, v)?})))
+}
+async fn delete_product(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<StatusCode> {
+    need(&c, "commerce", "write")?;
+    controller::erp::product_delete(&s.pool, &id)?;
+    Ok(StatusCode::NO_CONTENT)
+}
 
-async fn list_receipts(State(s):State<AppState>, Extension(c):Extension<Claims>)->ApiResult<Json<Value>>{ need(&c,"commerce","read")?; Ok(Json(json!({"receipts": controller::erp::receipts(&s.pool)?}))) }
-async fn create_receipt(State(s):State<AppState>, Extension(c):Extension<Claims>, Json(v):Json<models::erp::NewGoodsReceipt>)->ApiResult<(StatusCode, Json<Value>)>{ need(&c,"commerce","write")?; Ok((StatusCode::CREATED, Json(json!({"receipt": controller::erp::receipt_create(&s.pool,v, vec![])?})))) }
+// ============================================================================
+// Units
+// ============================================================================
+async fn list_units(State(s): State<AppState>, Extension(c): Extension<Claims>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"units": controller::erp::units(&s.pool)?})))
+}
+async fn get_unit(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    one(&s, &c, "units", "read", &id, |conn| {
+        use diesel::prelude::*;
+        models::erp::Unit::find_by_id(&id).first(conn).map_err(|e| ApiError::new(StatusCode::NOT_FOUND, e.to_string()))
+    }).await.map(|(_, j)| Json(j))
+}
+async fn create_unit(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewUnit>) -> ApiResult<(StatusCode, Json<Value>)> {
+    need(&c, "commerce", "write")?;
+    Ok((StatusCode::CREATED, Json(json!({"unit": controller::erp::unit_create(&s.pool, v)?}))))
+}
+async fn update_unit(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewUnit>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "write")?;
+    Ok(Json(json!({"unit": controller::erp::unit_update(&s.pool, &id, v)?})))
+}
+async fn delete_unit(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<StatusCode> {
+    need(&c, "commerce", "write")?;
+    controller::erp::unit_delete(&s.pool, &id)?;
+    Ok(StatusCode::NO_CONTENT)
+}
 
-async fn list_inventory(State(s):State<AppState>, Extension(c):Extension<Claims>)->ApiResult<Json<Value>>{ need(&c,"commerce","read")?; Ok(Json(json!({"transactions": controller::erp::inventory_txs(&s.pool)?}))) }
-async fn stock(State(s):State<AppState>, Extension(c):Extension<Claims>)->ApiResult<Json<Value>>{ need(&c,"commerce","read")?; let s2=controller::erp::inventory_stock(&s.pool)?; Ok(Json(json!({"stock": s2})) )}
+// ============================================================================
+// Warehouses
+// ============================================================================
+async fn list_warehouses(State(s): State<AppState>, Extension(c): Extension<Claims>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"warehouses": controller::erp::warehouses(&s.pool)?})))
+}
+async fn get_warehouse(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    one(&s, &c, "warehouses", "read", &id, |conn| {
+        use diesel::prelude::*;
+        models::erp::Warehouse::find_by_id(&id).first(conn).map_err(|e| ApiError::new(StatusCode::NOT_FOUND, e.to_string()))
+    }).await.map(|(_, j)| Json(j))
+}
+async fn create_warehouse(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewWarehouse>) -> ApiResult<(StatusCode, Json<Value>)> {
+    need(&c, "commerce", "write")?;
+    Ok((StatusCode::CREATED, Json(json!({"warehouse": controller::erp::warehouse_create(&s.pool, v)?}))))
+}
+async fn update_warehouse(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewWarehouse>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "write")?;
+    Ok(Json(json!({"warehouse": controller::erp::warehouse_update(&s.pool, &id, v)?})))
+}
+async fn delete_warehouse(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<StatusCode> {
+    need(&c, "commerce", "write")?;
+    controller::erp::warehouse_delete(&s.pool, &id)?;
+    Ok(StatusCode::NO_CONTENT)
+}
 
-async fn list_sales(State(s):State<AppState>, Extension(c):Extension<Claims>)->ApiResult<Json<Value>>{ need(&c,"commerce","read")?; Ok(Json(json!({"orders": controller::erp::sales_orders(&s.pool)?}))) }
-async fn create_sales(State(s):State<AppState>, Extension(c):Extension<Claims>, Json(v):Json<models::erp::NewSalesOrder>)->ApiResult<(StatusCode, Json<Value>)>{ need(&c,"commerce","write")?; Ok((StatusCode::CREATED, Json(json!({"order": controller::erp::sales_create(&s.pool,v)?})))) }
-async fn list_sales_lines(State(s):State<AppState>, Extension(c):Extension<Claims>, Path(id):Path<String>)->ApiResult<Json<Value>>{ need(&c,"commerce","read")?; Ok(Json(json!({"lines": controller::erp::sales_lines(&s.pool,&id)?}))) }
-async fn create_sales_line(State(s):State<AppState>, Extension(c):Extension<Claims>, Json(v):Json<models::erp::NewSalesLine>)->ApiResult<(StatusCode, Json<Value>)>{ need(&c,"commerce","write")?; Ok((StatusCode::CREATED, Json(json!({"line": controller::erp::sales_line_create(&s.pool,v)?})))) }
-async fn create_shipment(State(s):State<AppState>, Extension(c):Extension<Claims>, Json(v):Json<models::erp::NewShipment>)->ApiResult<(StatusCode, Json<Value>)>{ need(&c,"commerce","write")?; Ok((StatusCode::CREATED, Json(json!({"shipment": controller::erp::shipment_create(&s.pool,v, vec![])?})))) }
+// ============================================================================
+// Suppliers
+// ============================================================================
+async fn list_suppliers(State(s): State<AppState>, Extension(c): Extension<Claims>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"suppliers": controller::erp::suppliers(&s.pool)?})))
+}
+async fn get_supplier(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    one(&s, &c, "suppliers", "read", &id, |conn| {
+        use diesel::prelude::*;
+        models::erp::Supplier::find_by_id(&id).first(conn).map_err(|e| ApiError::new(StatusCode::NOT_FOUND, e.to_string()))
+    }).await.map(|(_, j)| Json(j))
+}
+async fn create_supplier(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewSupplier>) -> ApiResult<(StatusCode, Json<Value>)> {
+    need(&c, "commerce", "write")?;
+    Ok((StatusCode::CREATED, Json(json!({"supplier": controller::erp::supplier_create(&s.pool, v)?}))))
+}
+async fn update_supplier(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewSupplier>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "write")?;
+    Ok(Json(json!({"supplier": controller::erp::supplier_update(&s.pool, &id, v)?})))
+}
+async fn delete_supplier(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<StatusCode> {
+    need(&c, "commerce", "write")?;
+    controller::erp::supplier_delete(&s.pool, &id)?;
+    Ok(StatusCode::NO_CONTENT)
+}
 
-async fn list_assets(State(s):State<AppState>, Extension(c):Extension<Claims>)->ApiResult<Json<Value>>{ need(&c,"commerce","read")?; Ok(Json(json!({"assets": controller::erp::assets(&s.pool)?}))) }
-async fn create_asset(State(s):State<AppState>, Extension(c):Extension<Claims>, Json(v):Json<models::erp::NewAsset>)->ApiResult<(StatusCode, Json<Value>)>{ need(&c,"commerce","write")?; Ok((StatusCode::CREATED, Json(json!({"asset": controller::erp::asset_create(&s.pool,v)?})))) }
+// ============================================================================
+// Procurement
+// ============================================================================
+async fn list_procurement(State(s): State<AppState>, Extension(c): Extension<Claims>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"requests": controller::erp::procurement(&s.pool)?})))
+}
+async fn get_procurement(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    one(&s, &c, "procurement", "read", &id, |conn| {
+        use diesel::prelude::*;
+        models::erp::ProcurementRequest::find_by_id(&id).first(conn).map_err(|e| ApiError::new(StatusCode::NOT_FOUND, e.to_string()))
+    }).await.map(|(_, j)| Json(j))
+}
+async fn create_procurement(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewProcurement>) -> ApiResult<(StatusCode, Json<Value>)> {
+    need(&c, "commerce", "write")?;
+    Ok((StatusCode::CREATED, Json(json!({"request": controller::erp::procurement_create(&s.pool, v)?})))
+}
+async fn update_procurement(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewProcurement>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "write")?;
+    Ok(Json(json!({"request": controller::erp::procurement_update(&s.pool, &id, v)?})))
+}
+async fn delete_procurement(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<StatusCode> {
+    need(&c, "commerce", "write")?;
+    controller::erp::procurement_delete(&s.pool, &id)?;
+    Ok(StatusCode::NO_CONTENT)
+}
+async fn list_procurement_lines(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"lines": controller::erp::procurement_lines(&s.pool, &id)?})))
+}
+async fn create_procurement_line(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(mut v): Json<models::erp::NewProcurementLine>) -> ApiResult<(StatusCode, Json<Value>)> {
+    need(&c, "commerce", "write")?;
+    v.procurement_id = id.clone();
+    Ok((StatusCode::CREATED, Json(json!({"line": controller::erp::procurement_line_create(&s.pool, v)?}))))
+}
 
-async fn list_expenses(State(s):State<AppState>, Extension(c):Extension<Claims>)->ApiResult<Json<Value>>{ need(&c,"commerce","read")?; Ok(Json(json!({"expenses": controller::erp::expenses(&s.pool)?}))) }
-async fn create_expense(State(s):State<AppState>, Extension(c):Extension<Claims>, Json(v):Json<models::erp::NewExpense>)->ApiResult<(StatusCode, Json<Value>)>{ need(&c,"commerce","write")?; Ok((StatusCode::CREATED, Json(json!({"expense": controller::erp::expense_create(&s.pool,v)?})))) }
-async fn clear_expenses(State(s):State<AppState>, Extension(c):Extension<Claims>)->ApiResult<StatusCode>{ need(&c,"commerce","write")?; for e in controller::erp::expenses(&s.pool)? { controller::erp::expense_delete(&s.pool,&e.id)?; } Ok(StatusCode::NO_CONTENT) }
+// ============================================================================
+// Purchase Orders
+// ============================================================================
+async fn list_pos(State(s): State<AppState>, Extension(c): Extension<Claims>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"orders": controller::erp::purchase_orders(&s.pool)?})))
+}
+async fn get_po(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    one(&s, &c, "purchase-orders", "read", &id, |conn| {
+        use diesel::prelude::*;
+        models::erp::PurchaseOrder::find_by_id(&id).first(conn).map_err(|e| ApiError::new(StatusCode::NOT_FOUND, e.to_string()))
+    }).await.map(|(_, j)| Json(j))
+}
+async fn create_po(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewPurchaseOrder>) -> ApiResult<(StatusCode, Json<Value>)> {
+    need(&c, "commerce", "write")?;
+    Ok((StatusCode::CREATED, Json(json!({"order": controller::erp::po_create(&s.pool, v)?})))
+}
+async fn update_po(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewPurchaseOrder>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "write")?;
+    Ok(Json(json!({"order": controller::erp::po_update(&s.pool, &id, v)?})))
+}
+async fn delete_po(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<StatusCode> {
+    need(&c, "commerce", "write")?;
+    controller::erp::po_delete(&s.pool, &id)?;
+    Ok(StatusCode::NO_CONTENT)
+}
+async fn list_po_lines(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"lines": controller::erp::po_lines(&s.pool, &id)?})))
+}
+async fn get_po_line(State(s): State<AppState>, Extension(c): Extension<Claims>, Path((id, line_id)): Path<(String, String)>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    one(&s, &c, "purchase-order-lines", "read", &line_id, |conn| {
+        use diesel::prelude::*;
+        models::erp::PurchaseOrderLine::find_by_id(&line_id).first(conn).map_err(|e| ApiError::new(StatusCode::NOT_FOUND, e.to_string()))
+    }).await.map(|(_, j)| Json(j))
+}
+async fn create_po_line(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(mut v): Json<models::erp::NewPurchaseOrderLine>) -> ApiResult<(StatusCode, Json<Value>)> {
+    need(&c, "commerce", "write")?;
+    v.purchase_order_id = id.clone();
+    Ok((StatusCode::CREATED, Json(json!({"line": controller::erp::po_line_create(&s.pool, v)?}))))
+}
+async fn update_po_line(State(s): State<AppState>, Extension(c): Extension<Claims>, Path((id, line_id)): Path<(String, String)>, Json(v): Json<models::erp::NewPurchaseOrderLine>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "write")?;
+    Ok(Json(json!({"line": controller::erp::po_line_update(&s.pool, &id, &line_id, v)?})))
+}
+async fn delete_po_line(State(s): State<AppState>, Extension(c): Extension<Claims>, Path((id, line_id)): Path<(String, String)>) -> ApiResult<StatusCode> {
+    need(&c, "commerce", "write")?;
+    controller::erp::po_line_delete(&s.pool, &id, &line_id)?;
+    Ok(StatusCode::NO_CONTENT)
+}
+
+// ============================================================================
+// Goods Receipts
+// ============================================================================
+async fn list_receipts(State(s): State<AppState>, Extension(c): Extension<Claims>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"receipts": controller::erp::receipts(&s.pool)?})))
+}
+async fn get_receipt(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    one(&s, &c, "goods-receipts", "read", &id, |conn| {
+        use diesel::prelude::*;
+        models::erp::GoodsReceipt::find_by_id(&id).first(conn).map_err(|e| ApiError::new(StatusCode::NOT_FOUND, e.to_string()))
+    }).await.map(|(_, j)| Json(j))
+}
+async fn create_receipt(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(payload): Json<Value>) -> ApiResult<(StatusCode, Json<Value>)> {
+    need(&c, "commerce", "write")?;
+    let v: models::erp::NewGoodsReceipt = serde_json::from_value(payload.get("header").cloned().unwrap_or(json!({}))).map_err(|e| ApiError::new(StatusCode::BAD_REQUEST, e.to_string()))?;
+    let lines: Vec<models::erp::NewGoodsReceiptLine> = serde_json::from_value(payload.get("lines").cloned().unwrap_or(json!([]))).map_err(|e| ApiError::new(StatusCode::BAD_REQUEST, e.to_string()))?;
+    Ok((StatusCode::CREATED, Json(json!({"receipt": controller::erp::receipt_create(&s.pool, v, lines)?}))))
+}
+async fn delete_receipt(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<StatusCode> {
+    need(&c, "commerce", "write")?;
+    controller::erp::receipt_delete(&s.pool, &id)?;
+    Ok(StatusCode::NO_CONTENT)
+}
+async fn list_receipt_lines(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"lines": controller::erp::receipt_lines(&s.pool, &id)?})))
+}
+async fn create_receipt_line(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(mut v): Json<models::erp::NewGoodsReceiptLine>) -> ApiResult<(StatusCode, Json<Value>)> {
+    need(&c, "commerce", "write")?;
+    v.receipt_id = id.clone();
+    Ok((StatusCode::CREATED, Json(json!({"line": controller::erp::receipt_line_create(&s.pool, v)?}))))
+}
+
+// ============================================================================
+// Inventory
+// ============================================================================
+async fn list_inventory(State(s): State<AppState>, Extension(c): Extension<Claims>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"transactions": controller::erp::inventory_txs(&s.pool)?})))
+}
+async fn get_transaction(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    one(&s, &c, "inventory-transactions", "read", &id, |conn| {
+        use diesel::prelude::*;
+        models::erp::InventoryTransaction::find_by_id(&id).first(conn).map_err(|e| ApiError::new(StatusCode::NOT_FOUND, e.to_string()))
+    }).await.map(|(_, j)| Json(j))
+}
+async fn stock(State(s): State<AppState>, Extension(c): Extension<Claims>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    let s2 = controller::erp::inventory_stock(&s.pool)?;
+    Ok(Json(json!({"stock": s2})))
+}
+
+// ============================================================================
+// Sales Orders
+// ============================================================================
+async fn list_sales(State(s): State<AppState>, Extension(c): Extension<Claims>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"orders": controller::erp::sales_orders(&s.pool)?})))
+}
+async fn get_sales(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    one(&s, &c, "sales-orders", "read", &id, |conn| {
+        use diesel::prelude::*;
+        models::erp::SalesOrder::find_by_id(&id).first(conn).map_err(|e| ApiError::new(StatusCode::NOT_FOUND, e.to_string()))
+    }).await.map(|(_, j)| Json(j))
+}
+async fn create_sales(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewSalesOrder>) -> ApiResult<(StatusCode, Json<Value>)> {
+    need(&c, "commerce", "write")?;
+    Ok((StatusCode::CREATED, Json(json!({"order": controller::erp::sales_create(&s.pool, v)?})))
+}
+async fn update_sales(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewSalesOrder>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "write")?;
+    Ok(Json(json!({"order": controller::erp::sales_update(&s.pool, &id, v)?})))
+}
+async fn delete_sales(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<StatusCode> {
+    need(&c, "commerce", "write")?;
+    controller::erp::sales_delete(&s.pool, &id)?;
+    Ok(StatusCode::NO_CONTENT)
+}
+async fn list_sales_lines(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"lines": controller::erp::sales_lines(&s.pool, &id)?})))
+}
+async fn get_sales_line(State(s): State<AppState>, Extension(c): Extension<Claims>, Path((id, line_id)): Path<(String, String)>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    one(&s, &c, "sales-lines", "read", &line_id, |conn| {
+        use diesel::prelude::*;
+        models::erp::SalesLine::find_by_id(&line_id).first(conn).map_err(|e| ApiError::new(StatusCode::NOT_FOUND, e.to_string()))
+    }).await.map(|(_, j)| Json(j))
+}
+async fn create_sales_line(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(mut v): Json<models::erp::NewSalesLine>) -> ApiResult<(StatusCode, Json<Value>)> {
+    need(&c, "commerce", "write")?;
+    v.sales_order_id = id.clone();
+    Ok((StatusCode::CREATED, Json(json!({"line": controller::erp::sales_line_create(&s.pool, v)?}))))
+}
+async fn update_sales_line(State(s): State<AppState>, Extension(c): Extension<Claims>, Path((id, line_id)): Path<(String, String)>, Json(v): Json<models::erp::NewSalesLine>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "write")?;
+    Ok(Json(json!({"line": controller::erp::sales_line_update(&s.pool, &id, &line_id, v)?})))
+}
+async fn delete_sales_line(State(s): State<AppState>, Extension(c): Extension<Claims>, Path((id, line_id)): Path<(String, String)>) -> ApiResult<StatusCode> {
+    need(&c, "commerce", "write")?;
+    controller::erp::sales_line_delete(&s.pool, &id, &line_id)?;
+    Ok(StatusCode::NO_CONTENT)
+}
+
+// ============================================================================
+// Shipments
+// ============================================================================
+async fn list_shipments(State(s): State<AppState>, Extension(c): Extension<Claims>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"shipments": controller::erp::shipments(&s.pool)?})))
+}
+async fn get_shipment(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    one(&s, &c, "shipments", "read", &id, |conn| {
+        use diesel::prelude::*;
+        models::erp::Shipment::find_by_id(&id).first(conn).map_err(|e| ApiError::new(StatusCode::NOT_FOUND, e.to_string()))
+    }).await.map(|(_, j)| Json(j))
+}
+async fn create_shipment(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(payload): Json<Value>) -> ApiResult<(StatusCode, Json<Value>)> {
+    need(&c, "commerce", "write")?;
+    let v: models::erp::NewShipment = serde_json::from_value(payload.get("header").cloned().unwrap_or(json!({}))).map_err(|e| ApiError::new(StatusCode::BAD_REQUEST, e.to_string()))?;
+    let lines: Vec<models::erp::NewSalesLine> = serde_json::from_value(payload.get("lines").cloned().unwrap_or(json!([]))).map_err(|e| ApiError::new(StatusCode::BAD_REQUEST, e.to_string()))?;
+    Ok((StatusCode::CREATED, Json(json!({"shipment": controller::erp::shipment_create(&s.pool, v, lines)?}))))
+}
+async fn update_shipment(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewShipment>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "write")?;
+    Ok(Json(json!({"shipment": controller::erp::shipment_update(&s.pool, &id, v)?})))
+}
+async fn delete_shipment(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<StatusCode> {
+    need(&c, "commerce", "write")?;
+    controller::erp::shipment_delete(&s.pool, &id)?;
+    Ok(StatusCode::NO_CONTENT)
+}
+
+// ============================================================================
+// Assets
+// ============================================================================
+async fn list_assets(State(s): State<AppState>, Extension(c): Extension<Claims>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"assets": controller::erp::assets(&s.pool)?})))
+}
+async fn get_asset(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    one(&s, &c, "assets", "read", &id, |conn| {
+        use diesel::prelude::*;
+        models::erp::Asset::find_by_id(&id).first(conn).map_err(|e| ApiError::new(StatusCode::NOT_FOUND, e.to_string()))
+    }).await.map(|(_, j)| Json(j))
+}
+async fn create_asset(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewAsset>) -> ApiResult<(StatusCode, Json<Value>)> {
+    need(&c, "commerce", "write")?;
+    Ok((StatusCode::CREATED, Json(json!({"asset": controller::erp::asset_create(&s.pool, v)?})))
+}
+async fn update_asset(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewAsset>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "write")?;
+    Ok(Json(json!({"asset": controller::erp::asset_update(&s.pool, &id, v)?})))
+}
+async fn delete_asset(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<StatusCode> {
+    need(&c, "commerce", "write")?;
+    controller::erp::asset_delete(&s.pool, &id)?;
+    Ok(StatusCode::NO_CONTENT)
+}
+
+// ============================================================================
+// Expenses
+// ============================================================================
+async fn list_expenses(State(s): State<AppState>, Extension(c): Extension<Claims>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    Ok(Json(json!({"expenses": controller::erp::expenses(&s.pool)?})))
+}
+async fn get_expense(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "read")?;
+    one(&s, &c, "expenses", "read", &id, |conn| {
+        use diesel::prelude::*;
+        models::erp::Expense::find_by_id(&id).first(conn).map_err(|e| ApiError::new(StatusCode::NOT_FOUND, e.to_string()))
+    }).await.map(|(_, j)| Json(j))
+}
+async fn create_expense(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewExpense>) -> ApiResult<(StatusCode, Json<Value>)> {
+    need(&c, "commerce", "write")?;
+    Ok((StatusCode::CREATED, Json(json!({"expense": controller::erp::expense_create(&s.pool, v)?})))
+}
+async fn update_expense(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewExpense>) -> ApiResult<Json<Value>> {
+    need(&c, "commerce", "write")?;
+    Ok(Json(json!({"expense": controller::erp::expense_update(&s.pool, &id, v)?})))
+}
+async fn delete_expense(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>) -> ApiResult<StatusCode> {
+    need(&c, "commerce", "write")?;
+    controller::erp::expense_delete(&s.pool, &id)?;
+    Ok(StatusCode::NO_CONTENT)
+}
+async fn clear_expenses(State(s): State<AppState>, Extension(c): Extension<Claims>) -> ApiResult<StatusCode> {
+    need(&c, "commerce", "write")?;
+    for e in controller::erp::expenses(&s.pool)? {
+        controller::erp::expense_delete(&s.pool, &e.id)?;
+    }
+    Ok(StatusCode::NO_CONTENT)
+}
