@@ -219,7 +219,7 @@ async fn get_procurement(State(s): State<AppState>, Extension(c): Extension<Clai
 async fn create_procurement(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewProcurement>) -> ApiResult<(StatusCode, Json<Value>)> {
     need(&c, "commerce", "write")?;
     let r = controller::erp::procurement_create(&s.pool, v)?;
-    Ok((StatusCode::CREATED, Json(json!({"request": r})))
+    Ok((StatusCode::CREATED, Json(json!({"request": r}))))
 }
 async fn update_procurement(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewProcurement>) -> ApiResult<Json<Value>> {
     need(&c, "commerce", "write")?;
