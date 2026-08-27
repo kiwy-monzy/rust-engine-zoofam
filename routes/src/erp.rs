@@ -326,7 +326,7 @@ async fn create_receipt_line(State(s): State<AppState>, Extension(c): Extension<
     need(&c, "commerce", "write")?;
     v.receipt_id = id.clone();
     let l = controller::erp::receipt_line_create(&s.pool, v)?;
-    Ok((StatusCode::CREATED, Json(json!({"line": l})))
+    Ok((StatusCode::CREATED, Json(json!({"line": l}))))
 }
 
 // ============================================================================
