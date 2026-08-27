@@ -127,8 +127,8 @@ pub fn private(state: AppState) -> Router {
         .merge(storage::storage_routes())
         // Fleet vehicles and map events
         .merge(fleet::fleet_routes())
-        // Commerce ERP — 7 sub-modules ledger based
-        .merge(commerce::commerce_routes())
+        // ERP — 7 sub-modules ledger based
+        .merge(erp::erp_routes())
         // CRM → ERP bridge (Quote → Sales Order → Accounting invoice)
         .merge(crm::crm_routes())
         // Search — Tantivy full-text search
