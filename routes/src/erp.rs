@@ -192,7 +192,7 @@ async fn get_supplier(State(s): State<AppState>, Extension(c): Extension<Claims>
 async fn create_supplier(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewSupplier>) -> ApiResult<(StatusCode, Json<Value>)> {
     need(&c, "commerce", "write")?;
     let s2 = controller::erp::supplier_create(&s.pool, v)?;
-    Ok((StatusCode::CREATED, Json(json!({"supplier": s2})))
+    Ok((StatusCode::CREATED, Json(json!({"supplier": s2}))))
 }
 async fn update_supplier(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewSupplier>) -> ApiResult<Json<Value>> {
     need(&c, "commerce", "write")?;
