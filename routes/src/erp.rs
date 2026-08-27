@@ -165,7 +165,7 @@ async fn get_warehouse(State(s): State<AppState>, Extension(c): Extension<Claims
 async fn create_warehouse(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewWarehouse>) -> ApiResult<(StatusCode, Json<Value>)> {
     need(&c, "commerce", "write")?;
     let w = controller::erp::warehouse_create(&s.pool, v)?;
-    Ok((StatusCode::CREATED, Json(json!({"warehouse": w})))
+    Ok((StatusCode::CREATED, Json(json!({"warehouse": w}))))
 }
 async fn update_warehouse(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewWarehouse>) -> ApiResult<Json<Value>> {
     need(&c, "commerce", "write")?;
