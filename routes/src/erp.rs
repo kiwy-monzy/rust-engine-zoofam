@@ -8,11 +8,11 @@ use axum::{
     Extension, Json, Router,
     routing::{delete, get, patch, post},
 };
-use diesel::prelude::*;
 use serde::Deserialize;
 use serde_json::{json, Value};
 use crate::{middleware::{ApiError, ApiResult}, state::AppState};
 use auth::Claims;
+use models::schema::*;
 
 fn need(c: &Claims, m: &str, a: &str) -> Result<(), ApiError> {
     c.require(m, a).map_err(|e| ApiError::new(StatusCode::FORBIDDEN, e.to_string()))
