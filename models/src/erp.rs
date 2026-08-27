@@ -53,7 +53,7 @@ pub struct NewUnit { pub id: String, pub name: String, pub symbol: String }
 #[derive(Debug, Clone, Queryable, Selectable, Identifiable, Serialize)]
 #[diesel(table_name = commerce_warehouses)]
 pub struct Warehouse { pub id: String, pub name: String, pub location: Option<String>, pub created_at: NaiveDateTime, pub updated_at: NaiveDateTime }
-#[derive(Debug, Insertable, Deserialize)]
+#[derive(Debug, Insertable, Deserialize, AsChangeset)]
 #[diesel(table_name = commerce_warehouses)]
 pub struct NewWarehouse { pub id: String, pub name: String, pub location: Option<String> }
 
