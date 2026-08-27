@@ -256,7 +256,7 @@ async fn get_po(State(s): State<AppState>, Extension(c): Extension<Claims>, Path
 async fn create_po(State(s): State<AppState>, Extension(c): Extension<Claims>, Json(v): Json<models::erp::NewPurchaseOrder>) -> ApiResult<(StatusCode, Json<Value>)> {
     need(&c, "commerce", "write")?;
     let o = controller::erp::po_create(&s.pool, v)?;
-    Ok((StatusCode::CREATED, Json(json!({"order": o})))
+    Ok((StatusCode::CREATED, Json(json!({"order": o}))))
 }
 async fn update_po(State(s): State<AppState>, Extension(c): Extension<Claims>, Path(id): Path<String>, Json(v): Json<models::erp::NewPurchaseOrder>) -> ApiResult<Json<Value>> {
     need(&c, "commerce", "write")?;
