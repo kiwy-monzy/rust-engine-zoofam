@@ -1,0 +1,42 @@
+[package]
+name = "routes"
+version.workspace = true
+edition.workspace = true
+
+[features]
+default = ["postgres"]
+postgres = ["db/postgres", "models/postgres", "controller/postgres"]
+
+[dependencies]
+db = { workspace = true }
+models = { workspace = true }
+controller = { workspace = true }
+maps = { workspace = true }
+storage = { workspace = true }
+search = { workspace = true }
+auth = { workspace = true }
+rbac = { workspace = true }
+applewallet = { workspace = true }
+axum = { workspace = true }
+tower-http = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tower = { workspace = true }
+tracing = { workspace = true }
+futures = "0.3"
+uuid = { workspace = true }
+diesel = { workspace = true }
+chrono = { workspace = true }
+base64 = "0.22"
+sha2 = "0.10"
+tokio = { workspace = true }
+fleet = { workspace = true }
+fleet-icons = { workspace = true }
+gateway-fleet = { workspace = true }
+utoipa = { workspace = true }
+utoipa-swagger-ui = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }
+tower = { workspace = true }
+http-body-util = "0.1"

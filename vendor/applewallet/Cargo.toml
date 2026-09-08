@@ -1,0 +1,42 @@
+[package]
+name = "applewallet"
+version = "0.1.0"
+edition = "2021"
+description = "Apple Wallet (.pkpass) generator, signer, and pass-update web service with APNs push"
+license = "MIT"
+
+[lib]
+name = "applewallet"
+path = "src/lib.rs"
+
+[[bin]]
+name = "make-samples"
+path = "src/bin/make_samples.rs"
+
+[dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+chrono = { version = "0.4", features = ["serde"] }
+openssl = "0.10"
+zip = { version = "2", default-features = false, features = ["deflate"] }
+hex = "0.4"
+thiserror = "2"
+include_dir = "0.7"
+qrcode = "0.14"
+uuid = { version = "1", features = ["v4"] }
+
+# APNs push (HTTP/2 to api.push.apple.com) with the Pass Type ID client cert.
+# rustls-only: a single TLS backend so the rustls client identity is unambiguous
+# (matches mvt-server's TLS stack), and HTTP/2 is required by APNs.
+reqwest = { version = "0.12", default-features = false, features = ["http2", "rustls-tls"] }
+tokio = { version = "1", features = ["sync"] }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+
+# Detached from the parent crates/ workspace: vendored sources must keep
+# their own feature resolution (the gateway builds jwt-simple with
+# pure-rust for musl, never the crate's optimal default).
+[workspace]
+

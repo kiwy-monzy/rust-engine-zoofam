@@ -1,0 +1,13 @@
+[package]
+name = "rbac"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+db = { workspace = true }
+models = { workspace = true }
+controller = { workspace = true }
+
+[features]
+default = ["postgres"]
+postgres = ["db/postgres", "models/postgres", "controller/postgres"]

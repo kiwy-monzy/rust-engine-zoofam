@@ -1,0 +1,10 @@
+{
+  "name": "@gateway/module-storage",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "User file storage admin — @gateway/module-storage.",
+  "exports": { ".": "./src/index.tsx" },
+  "dependencies": { "@gateway/lib": "*", "@gateway/ui": "*" },
+  "peerDependencies": { "react": "^19.0.0" }
+}

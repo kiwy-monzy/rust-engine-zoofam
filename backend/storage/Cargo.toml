@@ -1,0 +1,18 @@
+[package]
+name = "storage"
+version.workspace = true
+edition.workspace = true
+
+[features]
+default = ["postgres"]
+postgres = ["db/postgres", "models/postgres"]
+
+[dependencies]
+db = { workspace = true }
+models = { workspace = true }
+diesel = { workspace = true }
+r2d2 = { workspace = true }
+chrono = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+uuid = { workspace = true }

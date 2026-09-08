@@ -1,0 +1,9 @@
+[book]
+authors = ["Clickpesa Team"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Clickpesa SDK Documentation"
+
+[output.html]
+no-search = true

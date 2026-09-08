@@ -1,0 +1,10 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {"type":"Feature","properties":{"name":"Dar es Salaam - Zanzibar","operator":"Azam Marine","kind":"fast_ferry"},"geometry":{"type":"LineString","coordinates":[[39.2926,-6.8221],[39.3300,-6.7400],[39.3200,-6.5500],[39.2600,-6.3500],[39.1980,-6.1620]]}},
+    {"type":"Feature","properties":{"name":"Zanzibar - Pemba (Mkoani)","operator":"Azam Marine","kind":"fast_ferry"},"geometry":{"type":"LineString","coordinates":[[39.1980,-6.1620],[39.2600,-5.9000],[39.4200,-5.6500],[39.6520,-5.3550]]}},
+    {"type":"Feature","properties":{"name":"Magogoni - Kigamboni crossing","operator":"TEMESA","kind":"vehicle_ferry"},"geometry":{"type":"LineString","coordinates":[[39.3013,-6.8245],[39.3090,-6.8295]]}},
+    {"type":"Feature","properties":{"name":"Mwanza - Bukoba","operator":"MSCL","kind":"lake_ferry"},"geometry":{"type":"LineString","coordinates":[[32.8987,-2.5230],[32.6000,-2.2000],[32.2000,-1.8000],[31.8290,-1.3350]]}},
+    {"type":"Feature","properties":{"name":"Kigoma - Kalemie corridor","operator":"MSCL","kind":"lake_ferry"},"geometry":{"type":"LineString","coordinates":[[29.6256,-4.8769],[29.4500,-5.0500],[29.2000,-5.4000],[29.1900,-5.9470]]}}
+  ]
+}

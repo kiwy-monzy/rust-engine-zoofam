@@ -1,0 +1,19 @@
+[package]
+name = "db"
+version.workspace = true
+edition.workspace = true
+
+[features]
+default = ["postgres"]
+postgres = ["diesel/postgres"]
+
+[dependencies]
+diesel = { workspace = true, features = ["postgres"] }
+diesel_migrations = { workspace = true }
+dotenvy = { workspace = true }
+r2d2 = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+tokio = { workspace = true }

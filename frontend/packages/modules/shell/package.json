@@ -1,0 +1,12 @@
+{
+  "name": "@gateway/module-shell",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Window shell: decorum-style title bar and navigation-rail sidebar with light/dark theming.",
+  "exports": { ".": "./src/index.tsx" },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-router": "^7.0.0"
+  }
+}

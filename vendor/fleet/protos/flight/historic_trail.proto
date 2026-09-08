@@ -1,0 +1,13 @@
+syntax = "proto3";
+package historic_trail;
+option go_package = "github.com/flightradar24-grpc/protos/historic_trail";
+
+import "common.proto";
+
+message HistoricTrailRequest {
+    fixed32 flight_id = 1;
+}
+
+message HistoricTrailResponse {
+    repeated common.RadarHistoryRecord radar_records_list = 1;
+}

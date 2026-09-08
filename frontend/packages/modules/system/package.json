@@ -1,0 +1,10 @@
+{
+  "name": "@gateway/module-system",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "System settings: console name, logo and version — add individually via @gateway/module-system.",
+  "exports": { ".": "./src/index.tsx" },
+  "dependencies": { "@gateway/lib": "*", "@gateway/ui": "*" },
+  "peerDependencies": { "react": "^19.0.0" }
+}

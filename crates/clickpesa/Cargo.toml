@@ -1,0 +1,38 @@
+[package]
+name = "clickpesa"
+version = "0.1.0"
+edition = "2021"
+description = "Clickpesa Payment Gateway SDK for Rust"
+license = "MIT"
+repository = "https://github.com/kiwymonzy/clickpesa-rs"
+readme = "README.md"
+
+[features]
+default = ["payments", "payouts", "account", "billpay"]
+orders = []
+payments = []
+subscriptions = []
+products = []
+payouts = []
+invoices = []
+webhooks = []
+customers = []
+account = []
+billpay = []
+
+[dependencies]
+reqwest = { version = "0.12", features = ["json", "rustls-tls"], default-features = false }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tokio = { version = "1.0", features = ["full"] }
+thiserror = "1.0"
+url = "2.5"
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
+base64 = "0.22"
+sha2 = "0.10"
+hmac = "0.12"
+dotenvy = "0.15"
+
+[dev-dependencies]
+tokio-test = "0.4"

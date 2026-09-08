@@ -1,0 +1,25 @@
+syntax = "proto3";
+package nearest_flights;
+option go_package = "github.com/flightradar24-grpc/protos/nearest_flights";
+
+import "common.proto";
+
+message Geolocation {
+    float lat = 1;
+    float lon = 2;
+}
+
+message NearestFlightsRequest {
+    Geolocation location = 1;
+    uint32 radius = 2;
+    uint32 limit = 3;
+}
+
+message NearbyFlight {
+    common.Flight flight = 1;
+    uint32 distance = 2;
+}
+
+message NearestFlightsResponse {
+    repeated NearbyFlight flights_list = 1;
+}

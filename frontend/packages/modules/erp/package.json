@@ -1,0 +1,10 @@
+{
+  "name": "@gateway/module-erp",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "ERP — Products → Procurement → Purchasing → Goods Receipt → Inventory (ledger) → Sales / Assets / Expenses. Sub-sidebar keeps main rail.",
+  "exports": { ".": "./src/index.tsx" },
+  "dependencies": { "@gateway/lib": "*", "@gateway/ui": "*" },
+  "peerDependencies": { "react": "^19.0.0", "react-router": "^7.0.0" }
+}

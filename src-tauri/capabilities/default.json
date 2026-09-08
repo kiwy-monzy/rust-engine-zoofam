@@ -1,0 +1,10 @@
+{
+  "identifier": "default",
+  "description": "Default capabilities for TableTop Labs",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "shell:allow-open",
+    "updater:default"
+  ]
+}

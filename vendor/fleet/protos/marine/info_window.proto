@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package marinetraffic.infowindow;
+
+// GET /en/ais/get_info_window_json?asset_type=ship&id={area_id}
+// Detailed vessel list for a map info window / cluster (rich fields).
+message InfoWindowJson {
+  int32 result_type = 1;
+  InfoWindowData data = 2;
+}
+
+message InfoWindowData {
+  repeated ShipRow rows = 1;
+  int32 area_ships = 2;
+}
+
+message ShipRow {
+  string lat = 1;
+  string lon = 2;
+  optional string speed = 3;
+  optional string course = 4;
+  optional string heading = 5;
+  optional string elapsed = 6;
+  optional string destination = 7;
+  optional string flag = 8;
+  optional string length = 9;
+  optional string rot = 10;
+  string shipname = 11;
+  string shiptype = 12;
+  string ship_id = 13;
+  optional string width = 14;
+  optional string l_fore = 15;
+  optional string w_left = 16;
+  optional string invalid_dimensions = 17;
+  optional string dwt = 18;
+  optional string gt_shiptype = 19;
+}

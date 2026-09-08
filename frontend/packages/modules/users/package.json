@@ -1,0 +1,10 @@
+{
+  "name": "@gateway/module-users",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Admin users list — add individually via @gateway/module-users.",
+  "exports": { ".": "./src/index.tsx" },
+  "dependencies": { "@gateway/lib": "*", "@gateway/ui": "*" },
+  "peerDependencies": { "react": "^19.0.0" }
+}

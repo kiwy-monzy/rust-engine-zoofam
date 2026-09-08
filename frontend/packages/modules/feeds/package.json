@@ -1,0 +1,10 @@
+{
+  "name": "@gateway/module-feeds",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Dashboard feeds card — ported from Builder.io Feed Section (Ko-fi tip feed) as a reusable dashboard module.",
+  "exports": { ".": "./src/index.tsx" },
+  "dependencies": { "@gateway/lib": "*", "@gateway/ui": "*" },
+  "peerDependencies": { "react": "^19.0.0" }
+}

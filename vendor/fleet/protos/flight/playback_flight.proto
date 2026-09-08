@@ -1,0 +1,19 @@
+syntax = "proto3";
+package playback_flight;
+option go_package = "github.com/flightradar24-grpc/protos/playback_flight";
+
+import "common.proto";
+
+message PlaybackFlightRequest {
+    fixed32 flight_id = 1;
+    uint64 timestamp = 2;
+    common.RestrictionVisibility restriction_mode = 3;
+}
+
+message PlaybackFlightResponse {
+    common.AircraftInfo aircraft_info = 1;
+    common.ScheduleInfo schedule_info = 2;
+    common.ExtendedFlightInfo flight_info = 3;
+    repeated common.TrailPoint flight_trail_list = 4;
+    common.FlightProgress flight_progress = 5;
+}

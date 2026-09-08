@@ -1,0 +1,20 @@
+syntax = "proto3";
+package follow_flight;
+option go_package = "github.com/flightradar24-grpc/protos/follow_flight";
+
+import "common.proto";
+
+message FollowFlightRequest {
+    fixed32 flight_id = 1;
+    common.RestrictionVisibility restriction_mode = 2;
+}
+
+message FollowFlightResponse {
+    common.AircraftInfo aircraft_info = 1;
+    common.FlightPlan flight_plan = 2;
+    common.ScheduleInfo schedule_info = 3;
+    common.FlightProgress flight_progress = 4;
+    common.ExtendedFlightInfo flight_info = 5;
+    repeated common.TrailPoint flight_trail_list = 6;
+    common.PositionBuffer position_buffer = 7;
+}

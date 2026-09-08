@@ -1,0 +1,43 @@
+{
+  "$schema": "https://raw.githubusercontent.com/nicholasgasior/tauri-config-schema/tauri-v2/schema.json",
+  "productName": "TableTop Labs",
+  "version": "0.1.0",
+  "identifier": "com.tabletoplabs.admin",
+  "build": {
+    "frontendDist": "../frontend/dist",
+    "devUrl": "http://localhost:5173",
+    "beforeDevCommand": "cd ../frontend && npm run dev",
+    "beforeBuildCommand": "cd ../frontend && npm run build"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "TableTop Labs",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 900,
+        "minHeight": 600,
+        "decorations": true,
+        "resizable": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "plugins": {
+    "updater": {
+      "active": true,
+      "endpoints": [
+        "https://releases.tabletoplabs.com/api/v1/system/releases/check/{{target}}/{{arch}}/{{current_version}}"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQgb3IgYSBwbGFjZWhvbGRlciBrZXkgaGVyZQ==",
+      "windows": {
+        "installMode": "both"
+      }
+    },
+    "shell": {
+      "open": true
+    }
+  }
+}

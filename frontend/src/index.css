@@ -1,0 +1,104 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ── theme tokens ───────────────────────────────────────────────────────
+   Light: #fafafa surfaces · Dark: #1a1a1a · brand accent is the red
+   family (#dc2626 / #d63232 → #b91c1c) taken from the sidebar plugin. */
+:root {
+  --app-bg: #fafafa;
+  --app-fg: #27272a;
+  --app-fg-muted: #71717a;
+  --app-fg-faint: #a1a1aa;
+  --app-border: rgba(0, 0, 0, 0.08);
+  --app-card: #ffffff;
+  --app-card-2: #f4f4f4;
+  --accent: #dc2626;
+  --accent-strong: #b91c1c;
+  --accent-soft: rgba(220, 38, 38, 0.12);
+  --accent-fg: #b91c1c;
+
+  --sb-bg: #fafafa;
+  --sb-border: rgba(0, 0, 0, 0.08);
+  --sb-fg: #27272a;
+  --sb-fg-muted: #71717a;
+  --sb-hover: rgba(0, 0, 0, 0.05);
+  --sb-active-bg: #1a1a1a;
+  --sb-active-fg: #fafafa;
+  --sb-icon-bg: #fafafa;
+  --sb-icon-border: rgba(0, 0, 0, 0.08);
+  --sb-icon-shadow: 3px 3px 6px rgba(0, 0, 0, 0.1), -2px -2px 5px rgba(255, 255, 255, 0.5);
+  --sb-icon-hover-shadow: 4px 4px 10px rgba(0, 0, 0, 0.15), -3px -3px 8px rgba(255, 255, 255, 0.6);
+  --sb-footer-border: rgba(0, 0, 0, 0.06);
+  --sb-version-fg: #a1a1aa;
+}
+
+.dark {
+  --app-bg: #1a1a1a;
+  --app-fg: #fafafa;
+  --app-fg-muted: #a1a1aa;
+  --app-fg-faint: #71717a;
+  --app-border: rgba(255, 255, 255, 0.08);
+  --app-card: #232323;
+  --app-card-2: #202020;
+  --accent: #ef4444;
+  --accent-strong: #dc2626;
+  --accent-soft: rgba(239, 68, 68, 0.16);
+  --accent-fg: #f87171;
+
+  --sb-bg: #1a1a1a;
+  --sb-border: rgba(255, 255, 255, 0.06);
+  --sb-fg: #fafafa;
+  --sb-fg-muted: #a1a1aa;
+  --sb-hover: rgba(255, 255, 255, 0.08);
+  --sb-active-bg: #fafafa;
+  --sb-active-fg: #1a1a1a;
+  --sb-icon-bg: #1a1a1a;
+  --sb-icon-border: rgba(255, 255, 255, 0.08);
+  --sb-icon-shadow: 3px 3px 6px rgba(0, 0, 0, 0.25), -2px -2px 5px rgba(255, 255, 255, 0.04);
+  --sb-icon-hover-shadow: 4px 4px 10px rgba(0, 0, 0, 0.35), -3px -3px 8px rgba(255, 255, 255, 0.06);
+  --sb-footer-border: rgba(255, 255, 255, 0.04);
+  --sb-version-fg: #71717a;
+}
+
+html,
+body {
+  background: var(--app-bg);
+  color: var(--app-fg);
+}
+
+/* ── hide scrollbars globally (sidebar + everywhere) ─────────────── */
+*,
+*::before,
+*::after {
+  scrollbar-width: none !important;
+  -ms-overflow-style: none !important;
+}
+*::-webkit-scrollbar,
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-thumb,
+*::-webkit-scrollbar-corner {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+  background: transparent !important;
+}
+
+/* download-hub fonts — Template 0 */
+@font-face {
+  font-family: 'luckiest-guy-regular';
+  src: url('/fonts/LuckiestGuy.ttf') format('truetype');
+  font-weight: 400 900; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'sister-spray';
+  src: url('/fonts/Sister Spray.ttf') format('truetype');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+.font-luckiest-guy { font-family: 'luckiest-guy-regular', cursive; }
+.font-sister-spray { font-family: 'sister-spray', cursive; }
+
+::selection {
+  background-color: var(--accent);
+  color: #fff;
+}

@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+package marinetraffic.tile_mob;
+
+// GET /getData/get_data_json_4_mob/z:{z}/X:{x}/Y:{y}/station:{station}?cb={ts}
+// Mobile map tile payload: vessels in view for that XYZ tile.
+message GetDataJson4MobResponse {
+  repeated TileMobVessel data = 1;
+  optional string cluster = 2;
+  optional string timestamp = 3;
+  optional string station = 4;
+}
+
+// One vessel blip from the tile feed (field names match typical MT JSON caps).
+message TileMobVessel {
+  string ship_id = 1;
+  string lat = 2;
+  string lon = 3;
+  optional string shiptype = 4;
+  optional string speed = 5;
+  optional string course = 6;
+  optional string heading = 7;
+  optional string shipname = 8;
+  optional string mmsi = 9;
+  optional string rot = 10;
+  optional string destination = 11;
+  optional string flag = 12;
+  optional string length = 13;
+  optional string width = 14;
+}

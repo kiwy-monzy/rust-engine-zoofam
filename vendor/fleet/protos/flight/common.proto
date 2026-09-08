@@ -1,0 +1,372 @@
+syntax = "proto3";
+package common;
+option go_package = "github.com/flightradar24-grpc/protos/common";
+
+import "google/protobuf/timestamp.proto";
+
+// --- Enums (prefixed to avoid C++ scoping collisions) ---
+
+enum RestrictionVisibility {
+    RV_NOT_VISIBLE = 0;
+    RV_PARTIALLY_VISIBLE = 1;
+    RV_FULLY_VISIBLE = 2;
+}
+
+enum Service {
+    SVC_PASSENGER = 0;
+    SVC_CARGO = 1;
+    SVC_MILITARY_AND_GOVERNMENT = 2;
+    SVC_BUSINESS_JETS = 3;
+    SVC_GENERAL_AVIATION = 4;
+    SVC_HELICOPTERS = 5;
+    SVC_LIGHTER_THAN_AIR = 6;
+    SVC_GLIDERS = 7;
+    SVC_DRONES = 8;
+    SVC_GROUND_VEHICLES = 9;
+    SVC_OTHER = 10;
+    SVC_NON_CATEGORIZED = 11;
+}
+
+enum TrafficType {
+    TT_NONE = 0;
+    TT_GROUND_ONLY = 1;
+    TT_AIRBORNE_ONLY = 2;
+    TT_ALL = 3;
+}
+
+enum DataSource {
+    DS_ADSB = 0;
+    DS_MLAT = 1;
+    DS_FLARM = 2;
+    DS_FAA = 3;
+    DS_ESTIMATED = 4;
+    DS_SATELLITE = 5;
+    DS_OTHER = 6;
+    DS_UAT = 7;
+    DS_SPIDERTRACKS = 8;
+    DS_AUS = 9;
+    DS_AIERON = 10;
+}
+
+enum Icon {
+    ICON_B738 = 0;
+    ICON_FGTR = 1;
+    ICON_ASW20 = 2;
+    ICON_C206 = 3;
+    ICON_C303 = 4;
+    ICON_LJ60 = 5;
+    ICON_Q300 = 6;
+    ICON_B736 = 7;
+    ICON_FOKKER100 = 8;
+    ICON_RJ85 = 9;
+    ICON_A320 = 10;
+    ICON_B757 = 11;
+    ICON_B767 = 12;
+    ICON_A3ST = 13;
+    ICON_MD11 = 14;
+    ICON_A330 = 15;
+    ICON_A343 = 16;
+    ICON_A346 = 17;
+    ICON_B777 = 18;
+    ICON_B747 = 19;
+    ICON_A380 = 20;
+    ICON_A225 = 21;
+    ICON_SI2 = 22;
+    ICON_EC = 23;
+    ICON_BALL = 24;
+    ICON_GRND = 25;
+    ICON_SLEI = 26;
+    ICON_DRON = 27;
+    ICON_SAT = 28;
+    ICON_ISS = 29;
+    ICON_CONC = 30;
+}
+
+enum Status {
+    STATUS_NORMAL = 0;
+    STATUS_BACKGROUND = 1;
+    STATUS_EMERGENCY = 2;
+    STATUS_NOT_AVAILABLE = 3;
+    STATUS_LIVE = 4;
+}
+
+enum FlightStage {
+    FS_UNKNOWN = 0;
+    FS_ON_GROUND = 1;
+    FS_ASCENDING = 2;
+    FS_AIRBORNE = 3;
+    FS_DESCENDING = 4;
+    FS_DIVERSION = 5;
+}
+
+enum DelayStatus {
+    DELAY_GRAY = 0;
+    DELAY_GREEN = 1;
+    DELAY_YELLOW = 2;
+    DELAY_RED = 3;
+}
+
+enum EmergencyStatus {
+    ES_NO_EMERGENCY = 0;
+    ES_GENERAL_EMERGENCY = 1;
+    ES_LIFEGUARD_MEDICAL = 2;
+    ES_MINIMUM_FUEL = 3;
+    ES_NO_COMMUNICATIONS = 4;
+    ES_UNLAWFUL_INTERFERENCE = 5;
+    ES_DOWNED_AIRCRAFT = 6;
+    ES_RESERVED = 7;
+}
+
+// --- Messages ---
+
+// Enhanced Mode-S data (EMS)
+message EMSInfo {
+    int32 qnh = 1;
+    int32 amcp = 2;
+    int32 afms = 3;
+    int32 oat = 4;
+    int32 ias = 5;
+    int32 tas = 6;
+    int32 mach = 7;
+    int32 agps = 8;
+    int32 agpsdiff = 9;
+    int32 apflags = 10;
+    int32 wind_dir = 11;
+    int32 wind_speed = 12;
+    int32 rs = 13;
+}
+
+message EMSAvailability {
+    bool qnh_availability = 1;
+    bool amcp_availability = 2;
+    bool afms_availability = 3;
+    bool oat_availability = 4;
+    bool ias_availability = 5;
+    bool tas_availability = 6;
+    bool mach_availability = 7;
+    bool agps_availability = 8;
+    bool agpsdiff_availability = 9;
+    bool apflags_availability = 10;
+    bool wind_dir_availability = 11;
+    bool wind_speed_availability = 12;
+    bool rs_availability = 13;
+}
+
+message Schedule {
+    int32 std = 1;
+    int32 etd = 2;
+    int32 atd = 3;
+    int32 sta = 4;
+    int32 eta = 5;
+    int32 ata = 6;
+    int32 progress_pct = 7;
+}
+
+message Route {
+    string from = 1;
+    string to = 2;
+    string diverted_to = 3;
+}
+
+message ExtraFlightInfo {
+    string flight = 1;
+    string reg = 2;
+    Route route = 3;
+    string type = 4;
+    int32 squawk = 5;
+    int32 vspeed = 6;
+    string age = 7;
+    int32 country_of_reg = 8;
+    Schedule schedule = 9;
+    int32 logo_id = 10;
+    int32 airspace = 11;
+    EMSInfo ems_info = 12;
+    EMSAvailability ems_availability = 13;
+    uint32 icao_address = 14;
+    uint32 operated_by_id = 15;
+    bool squawk_availability = 16;
+    bool vspeed_availability = 17;
+    bool airspace_availability = 18;
+    string airspace_id = 19;
+}
+
+message SourceStats {
+    DataSource source = 1;
+    uint32 count = 2;
+}
+
+message Stats {
+    repeated SourceStats total_list = 1;
+}
+
+message RecentPosition {
+    int32 delta_lat = 1;
+    int32 delta_lon = 2;
+    uint32 delta_ms = 3;
+}
+
+message PositionBuffer {
+    repeated RecentPosition recent_positions_list = 1;
+}
+
+message Flight {
+    int32 flightid = 1;
+    float lat = 2;
+    float lon = 3;
+    int32 track = 4;
+    int32 alt = 5;
+    int32 speed = 6;
+    Icon icon = 7;
+    Status status = 8;
+    int32 timestamp = 9;
+    bool on_ground = 10;
+    string callsign = 11;
+    DataSource source = 12;
+    ExtraFlightInfo extra_info = 13;
+    PositionBuffer position_buffer = 14;
+    uint64 timestamp_ms = 15;
+}
+
+message FlightProgress {
+    uint32 traversed_distance = 1;
+    uint32 remaining_distance = 2;
+    uint32 elapsed_time = 3;
+    uint32 remaining_time = 4;
+    uint32 eta = 5;
+    uint32 great_circle_distance = 6;
+    uint32 mean_flight_time = 7;
+    FlightStage flight_stage = 8;
+    DelayStatus delay_status = 9;
+    uint32 progress_pct = 10;
+}
+
+message ImageInfo {
+    string url = 1;
+    string copyright = 2;
+    string thumbnail = 3;
+    string medium = 4;
+    string large = 5;
+    string sideview = 6;
+}
+
+message AircraftInfo {
+    uint32 icao_address = 1;
+    string reg = 2;
+    int32 country_of_reg = 3;
+    string type = 4;
+    Icon icon = 5;
+    string full_description = 6;
+    string msn = 7;
+    Service service = 8;
+    string ac_birth_date = 9;
+    uint32 ac_age = 10;
+    repeated ImageInfo images_list = 11;
+    bool is_test_flight = 12;
+    bool msn_available = 13;
+    bool age_available = 14;
+    string registered_owners = 15;
+    bool is_country_of_reg_available = 16;
+}
+
+message Point {
+    int32 latitude = 1;
+    int32 longitude = 2;
+}
+
+message Coordinate {
+    string code = 1;
+    Point point = 2;
+}
+
+message Fix {
+    string airport = 1;
+    string area = 2;
+    Coordinate coordinate = 3;
+}
+
+message AltArrival {
+    Fix arrival = 1;
+    float length = 2;
+}
+
+message FlightPlan {
+    string departure = 1;
+    string destination = 2;
+    string flight_plan_icao = 3;
+    double length = 4;
+    AltArrival alt_arrival_1 = 5;
+    AltArrival alt_arrival_2 = 6;
+    repeated Point waypoints_list = 7;
+}
+
+message ScheduleInfo {
+    string flight_number = 1;
+    uint32 operated_by_id = 2;
+    uint32 painted_as_id = 3;
+    uint32 origin_id = 4;
+    uint32 destination_id = 5;
+    uint32 diverted_to_id = 6;
+    uint32 scheduled_departure = 7;
+    uint32 scheduled_arrival = 8;
+    uint32 actual_departure = 9;
+    uint32 actual_arrival = 10;
+    string arr_terminal = 11;
+    string arr_gate = 12;
+    string baggage_belt = 13;
+}
+
+message ExtendedFlightInfo {
+    uint32 flightid = 1;
+    float lat = 2;
+    float lon = 3;
+    int32 track = 4;
+    int32 alt = 5;
+    int32 speed = 6;
+    Status status = 7;
+    uint64 timestamp_ms = 8;
+    bool on_ground = 9;
+    string callsign = 10;
+    DataSource source = 11;
+    EMSAvailability ems_availability = 12;
+    EMSInfo ems_info = 13;
+    bool squawk_availability = 14;
+    int32 squawk = 15;
+    bool vspeed_availability = 16;
+    int32 vspeed = 17;
+    bool airspace_availability = 18;
+    string airspace = 19;
+    string airspace_id = 20;
+    uint64 server_time_ms = 21;
+}
+
+message TrailPoint {
+    uint64 snapshot_id = 1;
+    float lat = 2;
+    float lon = 3;
+    int32 altitude = 4;
+    uint32 spd = 5;
+    uint32 heading = 6;
+    int32 vspd = 7;
+    DataSource source = 8;
+}
+
+message RadarHistoryRecord {
+    uint64 timestamp = 1;
+    float lat = 2;
+    float lon = 3;
+    int32 altitude = 4;
+    uint32 spd = 5;
+    uint32 heading = 6;
+    int32 vspd = 7;
+    uint32 squawk = 8;
+    DataSource source = 9;
+    string callsign = 10;
+}
+
+message Duration {
+    uint32 count = 1;
+}
+
+message Tick {
+    uint32 count = 1;
+}

@@ -1,0 +1,22 @@
+[package]
+name = "gateway-fleet"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+db = { workspace = true }
+models = { workspace = true }
+maps = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+tokio = { workspace = true }
+tracing = { workspace = true }
+uuid = { workspace = true }
+diesel = { workspace = true }
+base64 = "0.22"
+bytes.workspace = true
+fleet = { path = "../../vendor/fleet", features = ["bolt", "marine", "flight", "sgr", "grid", "net"] }
+reqwest = { workspace = true }
+redis = { version = "0.27", default-features = false, features = ["tokio-comp"] }
+anyhow = "1"

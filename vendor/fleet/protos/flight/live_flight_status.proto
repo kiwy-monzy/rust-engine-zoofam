@@ -1,0 +1,25 @@
+syntax = "proto3";
+package live_flight_status;
+option go_package = "github.com/flightradar24-grpc/protos/live_flight_status";
+
+import "common.proto";
+
+message LiveFlightStatusData {
+    float lat = 1;
+    float lon = 2;
+    common.Status status = 3;
+    uint32 squawk = 4;
+}
+
+message LiveFlightsStatusRequest {
+    repeated fixed32 flight_ids_list = 1;
+}
+
+message LiveFlightStatus {
+    uint32 flight_id = 1;
+    LiveFlightStatusData data = 2;
+}
+
+message LiveFlightsStatusResponse {
+    repeated LiveFlightStatus flights_map = 1;
+}

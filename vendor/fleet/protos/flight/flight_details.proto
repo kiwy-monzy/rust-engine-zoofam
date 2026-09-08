@@ -1,0 +1,21 @@
+syntax = "proto3";
+package flight_details;
+option go_package = "github.com/flightradar24-grpc/protos/flight_details";
+
+import "common.proto";
+
+message FlightDetailsRequest {
+    fixed32 flight_id = 1;
+    common.RestrictionVisibility restriction_mode = 2;
+    bool verbose = 3;
+}
+
+message FlightDetailsResponse {
+    common.AircraftInfo aircraft_info = 1;
+    common.ScheduleInfo schedule_info = 2;
+    common.FlightProgress flight_progress = 3;
+    common.ExtendedFlightInfo flight_info = 4;
+    common.FlightPlan flight_plan = 5;
+    repeated common.TrailPoint flight_trail_list = 6;
+    common.PositionBuffer position_buffer = 7;
+}

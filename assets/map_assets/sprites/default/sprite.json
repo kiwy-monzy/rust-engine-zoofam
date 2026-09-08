@@ -1,0 +1,149 @@
+{
+  "airport": {
+    "x": 0,
+    "y": 0,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "seaport": {
+    "x": 32,
+    "y": 0,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "ship": {
+    "x": 64,
+    "y": 0,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "railway": {
+    "x": 96,
+    "y": 0,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "ferry": {
+    "x": 128,
+    "y": 0,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "hospital": {
+    "x": 128,
+    "y": 64,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "school": {
+    "x": 160,
+    "y": 64,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "place_of_worship": {
+    "x": 192,
+    "y": 64,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "hotel": {
+    "x": 224,
+    "y": 64,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "restaurant": {
+    "x": 0,
+    "y": 96,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "fuel": {
+    "x": 32,
+    "y": 96,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "atm": {
+    "x": 64,
+    "y": 96,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "park": {
+    "x": 96,
+    "y": 96,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "viewpoint": {
+    "x": 128,
+    "y": 96,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "mountain": {
+    "x": 160,
+    "y": 96,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "beach": {
+    "x": 192,
+    "y": 96,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "police": {
+    "x": 224,
+    "y": 96,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "fire_station": {
+    "x": 0,
+    "y": 128,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "government": {
+    "x": 32,
+    "y": 128,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "hospital_outline": {
+    "x": 64,
+    "y": 128,
+    "width": 32,
+    "height": 32,
+    "pixelRatio": 1
+  },
+  "tanzania_flag": {
+    "x": 0,
+    "y": 160,
+    "width": 96,
+    "height": 64,
+    "pixelRatio": 1
+  }
+}

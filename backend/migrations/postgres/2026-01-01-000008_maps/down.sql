@@ -1,0 +1,7 @@
+-- Maps migration rollback
+DROP TABLE IF EXISTS map_tile_features CASCADE;
+DROP TABLE IF EXISTS map_tiles CASCADE;
+DROP TABLE IF EXISTS map_features CASCADE;
+DROP TABLE IF EXISTS map_styles CASCADE;
+DROP TABLE IF EXISTS map_layers CASCADE;
+DROP TABLE IF EXISTS map_sources CASCADE;

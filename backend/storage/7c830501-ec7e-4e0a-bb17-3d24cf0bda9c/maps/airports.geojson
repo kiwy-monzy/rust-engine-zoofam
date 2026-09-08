@@ -1,0 +1,19 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {"type":"Feature","properties":{"name":"Julius Nyerere International Airport","iata":"DAR","kind":"international","city":"Dar es Salaam"},"geometry":{"type":"Point","coordinates":[39.2026,-6.8781]}},
+    {"type":"Feature","properties":{"name":"Abeid Amani Karume International Airport","iata":"ZNZ","kind":"international","city":"Zanzibar City"},"geometry":{"type":"Point","coordinates":[39.2249,-6.2220]}},
+    {"type":"Feature","properties":{"name":"Kilimanjaro International Airport","iata":"JRO","kind":"international","city":"Hai"},"geometry":{"type":"Point","coordinates":[37.0745,-3.4294]}},
+    {"type":"Feature","properties":{"name":"Mwanza Airport","iata":"MWZ","kind":"international","city":"Mwanza"},"geometry":{"type":"Point","coordinates":[32.9327,-2.4445]}},
+    {"type":"Feature","properties":{"name":"Arusha Airport","iata":"ARK","kind":"domestic","city":"Arusha"},"geometry":{"type":"Point","coordinates":[36.6333,-3.3679]}},
+    {"type":"Feature","properties":{"name":"Dodoma Airport","iata":"DOD","kind":"domestic","city":"Dodoma"},"geometry":{"type":"Point","coordinates":[35.7526,-6.1704]}},
+    {"type":"Feature","properties":{"name":"Songwe International Airport","iata":"MBI","kind":"international","city":"Mbeya"},"geometry":{"type":"Point","coordinates":[33.2740,-8.9199]}},
+    {"type":"Feature","properties":{"name":"Mtwara Airport","iata":"MYW","kind":"domestic","city":"Mtwara"},"geometry":{"type":"Point","coordinates":[40.1818,-10.3391]}},
+    {"type":"Feature","properties":{"name":"Tabora Airport","iata":"TBO","kind":"domestic","city":"Tabora"},"geometry":{"type":"Point","coordinates":[32.8334,-5.0763]}},
+    {"type":"Feature","properties":{"name":"Kigoma Airport","iata":"TKQ","kind":"domestic","city":"Kigoma"},"geometry":{"type":"Point","coordinates":[29.6709,-4.8862]}},
+    {"type":"Feature","properties":{"name":"Tanga Airport","iata":"TGT","kind":"domestic","city":"Tanga"},"geometry":{"type":"Point","coordinates":[39.0712,-5.0924]}},
+    {"type":"Feature","properties":{"name":"Bukoba Airport","iata":"BKZ","kind":"domestic","city":"Bukoba"},"geometry":{"type":"Point","coordinates":[31.8212,-1.3320]}},
+    {"type":"Feature","properties":{"name":"Songea Airport","iata":"SGX","kind":"domestic","city":"Songea"},"geometry":{"type":"Point","coordinates":[35.5830,-10.6830]}},
+    {"type":"Feature","properties":{"name":"Pemba Airport","iata":"PMA","kind":"domestic","city":"Chake Chake"},"geometry":{"type":"Point","coordinates":[39.8114,-5.2572]}}
+  ]
+}

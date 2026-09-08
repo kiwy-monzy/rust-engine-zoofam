@@ -1,0 +1,10 @@
+{
+  "name": "@gateway/module-permissions",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Permission registry — add individually via @gateway/module-permissions.",
+  "exports": { ".": "./src/index.tsx" },
+  "dependencies": { "@gateway/lib": "*", "@gateway/ui": "*" },
+  "peerDependencies": { "react": "^19.0.0" }
+}

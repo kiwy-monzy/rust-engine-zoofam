@@ -1,0 +1,5 @@
+# Apple Pass Type ID certificate and private key live here.
+# Never commit them - a leaked pass.key lets anyone sign passes as you.
+*
+!.gitignore
+!README.md

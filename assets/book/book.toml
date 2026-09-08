@@ -1,0 +1,28 @@
+[book]
+title = "Building an RBAC Gateway in Rust"
+description = "A small, readable HTTP API with Diesel migrations, JWT auth, and a public/private route split"
+authors = ["Kiwy Monzy"]
+language = "en"
+src = "src"
+
+[build]
+build-dir = "../target/book"
+create-missing = false
+
+[output.html]
+default-theme = "rust"
+preferred-dark-theme = "ayu"
+no-section-label = false
+
+[output.html.fold]
+enable = true
+level = 1
+
+[output.html.playground]
+editable = false
+copyable = true
+
+[output.html.search]
+enable = true
+limit-results = 20
+use-boolean-and = true

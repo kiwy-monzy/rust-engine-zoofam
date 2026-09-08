@@ -1,0 +1,16 @@
+[package]
+name = "models"
+version.workspace = true
+edition.workspace = true
+
+[features]
+default = ["postgres"]
+postgres = ["db/postgres"]
+
+[dependencies]
+db = { workspace = true }
+diesel = { workspace = true }
+serde = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+utoipa = { workspace = true }

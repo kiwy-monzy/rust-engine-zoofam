@@ -1,0 +1,10 @@
+{
+  "name": "@gateway/module-roles",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Roles and their permission bindings — add individually via @gateway/module-roles.",
+  "exports": { ".": "./src/index.tsx" },
+  "dependencies": { "@gateway/lib": "*", "@gateway/ui": "*" },
+  "peerDependencies": { "react": "^19.0.0" }
+}

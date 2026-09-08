@@ -1,16 +1,25 @@
 [workspace]
 members = [
-    "db",
-    "models",
-    "controller",
-    "auth",
-    "routes",
-    "gateway",
-    "maps",
-    "storage",
-    "search",
-    "fleet-icons",
-    "gateway-fleet",
+    "backend/db",
+    "backend/models",
+    "backend/controller",
+    "backend/auth",
+    "backend/rbac",
+    "backend/routes",
+    "backend/gateway",
+    "backend/search",
+    "backend/storage",
+    "crates/maps",
+    "crates/fleet-icons",
+    "crates/gateway-fleet",
+    "crates/beem-africa",
+    "crates/clickpesa",
+    "crates/notifty",
+]
+exclude = [
+    "vendor/applewallet",
+    "vendor/h3o",
+    "vendor/fleet",
 ]
 resolver = "2"
 
@@ -19,22 +28,26 @@ version = "0.1.0"
 edition = "2021"
 
 [workspace.dependencies]
-db = { path = "db", default-features = false }
-models = { path = "models", default-features = false }
-controller = { path = "controller", default-features = false }
-auth = { path = "auth" }
-routes = { path = "routes", default-features = false }
-maps = { path = "maps", default-features = false }
-storage = { path = "storage", default-features = false }
-search = { path = "search", default-features = false }
-fleet-icons = { path = "fleet-icons", default-features = false }
-applewallet = { path = "../vendor/applewallet" }
-fleet-vendor = { path = "../vendor/fleet", default-features = false, features = ["geometry"] }
+db = { path = "backend/db", default-features = false }
+models = { path = "backend/models", default-features = false }
+controller = { path = "backend/controller", default-features = false }
+auth = { path = "backend/auth" }
+routes = { path = "backend/routes", default-features = false }
+rbac = { path = "backend/rbac", default-features = false }
+maps = { path = "crates/maps", default-features = false }
+storage = { path = "backend/storage", default-features = false }
+search = { path = "backend/search", default-features = false }
+fleet-icons = { path = "crates/fleet-icons", default-features = false }
+gateway-fleet = { path = "crates/gateway-fleet", default-features = false }
+beem-africa = { path = "crates/beem-africa" }
+clickpesa = { path = "crates/clickpesa" }
+notifty = { path = "crates/notifty" }
+applewallet = { path = "vendor/applewallet" }
+fleet = { path = "vendor/fleet", default-features = false, features = ["geometry"] }
 
 tantivy = "0.22"
-tantivy-jieba = "0.1"
 
-diesel = { version = "2.2", default-features = false, features = ["chrono", "r2d2"] }
+diesel = { version = "2.1", default-features = false, features = ["chrono", "r2d2", "32-column-tables", "postgres"] }
 diesel_migrations = { version = "2.2", default-features = false }
 r2d2 = "0.8"
 dotenvy = "0.15"
@@ -49,10 +62,17 @@ serde_json = "1"
 uuid = { version = "1", features = ["v4", "serde"] }
 chrono = { version = "0.4", features = ["serde"] }
 jsonwebtoken = "9"
-argon2 = "0.5"
-password-hash = { version = "0.5", features = ["rand_core"] }
-rand_core = { version = "0.6", features = ["std"] }
+argon2 = "0.6"
+password-hash = { version = "0.6" }
 thiserror = "2"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
 ammonia = "4"
+bytes = "1"
+
+rustls = "0.23"
+tokio-rustls = "0.26"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "gzip", "cookies"] }
+sha2 = "0.10"
+utoipa = "4"
+utoipa-swagger-ui = { version = "7", features = ["axum"] }

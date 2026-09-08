@@ -1,0 +1,10 @@
+{
+  "name": "@gateway/module-marketplace",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Service Marketplace — Organizations, Categories, Services, Zones, Bookings, Requests, Cart, Reviews, Promotions, Notifications",
+  "exports": { ".": "./src/index.tsx" },
+  "dependencies": { "@gateway/lib": "*", "@gateway/ui": "*" },
+  "peerDependencies": { "react": "^19.0.0", "react-router": "^7.0.0" }
+}

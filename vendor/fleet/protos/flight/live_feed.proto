@@ -1,0 +1,97 @@
+syntax = "proto3";
+package live_feed;
+option go_package = "github.com/flightradar24-grpc/protos/live_feed";
+
+import "common.proto";
+import "google/protobuf/field_mask.proto";
+
+message LocationBoundaries {
+    float north = 1;
+    float south = 2;
+    float west = 3;
+    float east = 4;
+}
+
+message VisibilitySettings {
+    repeated common.DataSource sources_list = 1;
+    repeated common.Service services_list = 2;
+    common.TrafficType traffic_type = 3;
+    optional bool only_restricted = 4;
+}
+
+message AirportFilter {
+    string iata = 1;
+    int32 country_id = 2;
+    AirportFilterType type = 3;
+}
+
+enum AirportFilterType {
+    BOTH = 0;
+    INBOUND = 1;
+    OUTBOUND = 2;
+}
+
+message Interval {
+    int32 min = 1;
+    int32 max = 2;
+}
+
+message AirlineFilter {
+    string icao = 1;
+    AirlineFilterType type = 2;
+}
+
+enum AirlineFilterType {
+    PAINTED_AS = 0;
+    OPERATED_BY = 1;
+}
+
+message Filter {
+    repeated Interval altitude_ranges_list = 1;
+    repeated Interval speed_ranges_list = 2;
+    repeated AirlineFilter airlines_list = 3;
+    repeated string callsigns_list = 4;
+    repeated string radars_list = 5;
+    repeated string regs_list = 6;
+    repeated AirportFilter airports_list = 7;
+    repeated string flights_list = 8;
+    repeated string types_list = 9;
+    repeated Interval birth_year_ranges_list = 10;
+    repeated uint32 squawks_list = 11;
+    repeated AirportFilter origins_list = 12;
+    repeated AirportFilter destinations_list = 13;
+    repeated common.Service categories_list = 14;
+    repeated string airspaces_list = 15;
+}
+
+message LiveFeedRequest {
+    LocationBoundaries bounds = 1;
+    VisibilitySettings settings = 2;
+    Filter filters_list = 3;
+    string fleets_list = 4;
+    bool highlight_mode = 5;
+    optional bool stats = 6;
+    optional int32 limit = 7;
+    optional int32 maxage = 8;
+    optional common.RestrictionVisibility restriction_mode = 9;
+    google.protobuf.FieldMask field_mask = 10;
+    repeated fixed32 selected_flight_ids_list = 11;
+}
+
+message LiveFeedResponse {
+    repeated common.Flight flights_list = 1;
+    common.Stats stats = 2;
+    repeated common.Flight selected_flight_list = 3;
+    uint64 server_time_ms = 4;
+}
+
+message PlaybackRequest {
+    LiveFeedRequest live_feed_request = 1;
+    int32 timestamp = 2;
+    int32 prefetch = 3;
+    optional int32 hfreq = 4;
+}
+
+message PlaybackResponse {
+    LiveFeedResponse live_feed_response = 1;
+}

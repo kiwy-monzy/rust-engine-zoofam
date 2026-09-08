@@ -1,0 +1,91 @@
+syntax = "proto3";
+
+// The canonical fleet contract.
+//
+// Every source in this library — Bolt taxis, MarineTraffic vessels,
+// FlightRadar24 aircraft, SGR trains — normalises to these messages, whatever
+// its upstream speaks. FlightRadar24 is already protobuf and its own schema
+// lives in protos/flight; MarineTraffic's mobile tile feed is described in
+// protos/marine. Bolt and SGR are JSON upstream, so for them this file is the
+// only schema there is.
+//
+// Having one wire format for all four is what lets a poller store a catch, a
+// bus republish it and a client draw it without any of them knowing which
+// source it came from.
+package fleet;
+
+// What kind of thing is moving. Clients pick marker geometry from this, so it
+// is a closed enum rather than free text.
+enum Kind {
+  KIND_UNSPECIFIED = 0;
+  KIND_TAXI = 1;
+  KIND_VESSEL = 2;
+  KIND_AIRCRAFT = 3;
+  KIND_TRAIN = 4;
+}
+
+// One thing, somewhere, at one moment.
+message Vehicle {
+  // Unique within its source, not globally. Pair with source_id for a key.
+  string id = 1;
+  string source_id = 2;
+  Kind kind = 3;
+
+  double lat = 10;
+  double lng = 11;
+  // Degrees clockwise from north. Absent means the source did not say, which
+  // is not the same as zero: a marker drawn at 0 that should have been
+  // undirected points every vehicle due north.
+  optional double heading = 12;
+
+  optional string name = 20;
+  optional string sub_category = 21;
+  optional string vehicle_type = 22;
+  // Absolute URL of the source's own artwork. Resolving it to inline bytes is
+  // the caller's decision, so it stays a URL here.
+  optional string icon_url = 23;
+
+  // The source record verbatim, JSON-encoded, for anything not columned above.
+  // Bytes rather than Any: these payloads have no schema to register.
+  bytes raw = 30;
+
+  // Unix milliseconds. When this library observed the vehicle, not when the
+  // source claims it moved.
+  int64 fetched_at = 31;
+}
+
+// A geographic window to fetch. Sources that ignore it simply do not read it.
+message Area {
+  double lat = 1;
+  double lng = 2;
+}
+
+// What one fetch produced.
+message Catch {
+  repeated Vehicle vehicles = 1;
+
+  // icon id -> absolute URL, as advertised by this poll.
+  //
+  // A per-poll dictionary, not a compiled-in table: Bolt hands out fresh ids
+  // with every response and they differ between zones, so the same id means
+  // different artwork in another city.
+  map<string, string> icons = 2;
+
+  // Which source produced this, and when the fetch completed (Unix ms).
+  string source_id = 3;
+  int64 fetched_at = 4;
+}
+
+// A catch binned onto the H3 grid.
+message Cell {
+  // H3 cell index, as its canonical hex string.
+  string h3 = 1;
+  uint32 resolution = 2;
+  repeated Vehicle vehicles = 3;
+}
+
+message Grid {
+  repeated Cell cells = 1;
+  uint32 resolution = 2;
+  int64 fetched_at = 3;
+}

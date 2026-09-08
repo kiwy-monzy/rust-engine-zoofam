@@ -1,0 +1,54 @@
+{
+  "name": "gateway-admin",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Admin SPA for the Rust RBAC gateway - Vite 7 + React 19 + Tailwind v4, one installable package per admin module.",
+  "workspaces": [
+    "packages/*",
+    "packages/modules/*"
+  ],
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --port 5174"
+  },
+  "dependencies": {
+    "@gateway/lib": "*",
+    "@gateway/module-auth": "*",
+    "@gateway/module-dmc": "*",
+    "@gateway/module-fleet": "*",
+    "@gateway/module-marketplace": "*",
+    "@gateway/module-maps": "*",
+    "@gateway/module-rbac": "*",
+    "@gateway/module-shell": "*",
+    "@gateway/module-storage": "*",
+    "@gateway/module-support": "*",
+    "@gateway/module-system": "*",
+    "@gateway/module-erp": "*",
+    "@gateway/module-crm": "*",
+    "@gateway/module-feeds": "*",
+    "@gateway/module-users": "*",
+
+    "@gateway/module-website": "*",
+    "@gateway/ui": "*",
+    "leaflet": "^1.9.4",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "react-leaflet": "^5.0.0",
+    "react-router": "^7.9.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.13",
+    "@types/leaflet": "^1.9.22",
+    "@types/react": "^19.1.12",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.0",
+    "tailwindcss": "^4.1.13",
+    "typescript": "^5.9.2",
+    "vite": "^7.1.3"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
+  }
+}

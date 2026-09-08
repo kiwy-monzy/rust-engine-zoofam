@@ -1,0 +1,34 @@
+[package]
+name = "controller"
+version = "0.1.0"
+edition = "2021"
+
+[features]
+default = ["postgres"]
+postgres = ["db/postgres", "models/postgres"]
+
+[dependencies]
+db = { workspace = true, default-features = false }
+models = { workspace = true, default-features = false }
+auth = { workspace = true }
+maps = { workspace = true, default-features = false }
+storage = { workspace = true, default-features = false }
+search = { workspace = true, default-features = false }
+applewallet = { workspace = true }
+clickpesa = { workspace = true }
+beem-africa = { workspace = true }
+notifty = { workspace = true }
+diesel = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+chrono = { workspace = true }
+uuid = { workspace = true }
+thiserror = { workspace = true }
+ammonia = { workspace = true }
+tracing = { workspace = true }
+base64 = "0.22"
+lettre = { version = "0.11", default-features = false, features = ["smtp-transport", "rustls-tls", "builder", "hostname"] }
+utoipa = { workspace = true }
+tokio = { workspace = true }
+async-trait = "0.1"
+reqwest = { workspace = true }

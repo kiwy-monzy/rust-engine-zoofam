@@ -1,0 +1,8 @@
+-- CRM migration rollback
+DROP TABLE IF EXISTS crm_quote_lines CASCADE;
+DROP TABLE IF EXISTS crm_quotes CASCADE;
+DROP TABLE IF EXISTS crm_activities CASCADE;
+DROP TABLE IF EXISTS crm_contacts CASCADE;
+DROP TABLE IF EXISTS crm_customers CASCADE;
+DROP TABLE IF EXISTS crm_opportunities CASCADE;
+DROP TABLE IF EXISTS crm_leads CASCADE;

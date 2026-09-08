@@ -1,0 +1,6 @@
+﻿{
+  "fleet_aircraft": { "x": 0, "y": 0, "width": 128, "height": 128, "pixelRatio": 2 },
+  "fleet_ship": { "x": 128, "y": 0, "width": 128, "height": 128, "pixelRatio": 2 },
+  "fleet_ferry": { "x": 256, "y": 0, "width": 128, "height": 128, "pixelRatio": 2 },
+  "fleet_bolt": { "x": 384, "y": 0, "width": 128, "height": 128, "pixelRatio": 2 }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@gateway/ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Tailwind v4 UI primitives shared by every admin module.",
+  "exports": {
+    ".": "./src/index.tsx",
+    "./storage-picker": "./src/StoragePicker.tsx"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  }
+}

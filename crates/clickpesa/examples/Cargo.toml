@@ -1,0 +1,71 @@
+[[example]]
+name = "order_list"
+path = "src/order_list.rs"
+
+[[example]]
+name = "order_create"
+path = "src/order_create.rs"
+
+[[example]]
+name = "order_get"
+path = "src/order_get.rs"
+
+[[example]]
+name = "order_update"
+path = "src/order_update.rs"
+
+[[example]]
+name = "order_capture"
+path = "src/order_capture.rs"
+
+[[example]]
+name = "payment_authorize"
+path = "src/payment_authorize.rs"
+
+[[example]]
+name = "payment_capture"
+path = "src/payment_capture.rs"
+
+[[example]]
+name = "payment_refund"
+path = "src/payment_refund.rs"
+
+[[example]]
+name = "subscription_create"
+path = "src/subscription_create.rs"
+
+[[example]]
+name = "subscription_get"
+path = "src/subscription_get.rs"
+
+[[example]]
+name = "product_create"
+path = "src/product_create.rs"
+
+[[example]]
+name = "product_list"
+path = "src/product_list.rs"
+
+[[example]]
+name = "customer_create"
+path = "src/customer_create.rs"
+
+[[example]]
+name = "customer_get"
+path = "src/customer_get.rs"
+
+[[example]]
+name = "payout_create"
+path = "src/payout_create.rs"
+
+[[example]]
+name = "invoice_create"
+path = "src/invoice_create.rs"
+
+[[example]]
+name = "webhook_verify"
+path = "src/webhook_verify.rs"
+
+[[example]]
+name = "test_api"
+path = "src/test_api.rs"

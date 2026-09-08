@@ -1,0 +1,10 @@
+{
+  "name": "@gateway/lib",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Typed API client + session storage for the Rust gateway (/api/v1). Zero UI, zero framework deps.",
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

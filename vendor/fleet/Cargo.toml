@@ -1,0 +1,67 @@
+[package]
+name = "fleet"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+description = "One library for every live fleet source the gateway follows: Bolt taxis, MarineTraffic vessels, FlightRadar24 aircraft and Tanzania SGR trains, behind a single Source trait"
+rust-version = "1.85"
+
+[features]
+# Everything, which is what the gateway wants.
+default = ["bolt", "marine", "flight", "sgr"]
+
+# Vessel marker geometry on its own: no HTTP client, no protobuf, no async.
+# This is the slice the WASM map client compiles, and the reason the geometry
+# lives apart from the MarineTraffic client that feeds it.
+geometry = []
+
+# Shared plumbing for anything that talks to a network.
+net = ["proto", "grid", "dep:reqwest", "dep:tokio", "dep:async-trait", "dep:tracing", "dep:chrono"]
+
+# The shared protobuf contract every source normalises to. Separated from the
+# model itself so a geometry-only consumer does not compile a protobuf runtime
+# it will never encode anything with.
+proto = ["dep:prost"]
+
+# H3 hexagonal binning.
+grid = ["dep:h3o"]
+
+bolt = ["net", "dep:base64"]
+marine = ["net", "geometry"]
+flight = ["net", "dep:prost-types", "dep:rand"]
+sgr = ["net"]
+
+[dependencies]
+# Always present: the domain model is data, and every source produces it.
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "2"
+
+chrono = { version = "0.4", default-features = false, features = ["clock", "serde"], optional = true }
+
+# rustls only, never native-tls: the gateway links this into a static musl
+# binary, and OpenSSL against musl is a fight worth avoiding. Keeping every
+# source on one TLS stack also stops cargo unifying two of them into a build.
+reqwest = { version = "0.12", default-features = false, features = ["json", "gzip", "cookies", "rustls-tls"], optional = true }
+tokio = { version = "1", default-features = false, features = ["time"], optional = true }
+async-trait = { version = "0.1", optional = true }
+tracing = { version = "0.1", default-features = false, optional = true }
+
+base64 = { version = "0.22", optional = true }
+prost = { version = "0.13", optional = true }
+prost-types = { version = "0.13", optional = true }
+rand = { version = "0.8", optional = true }
+
+# H3 geodesic hex grid, pure Rust (no C), so it links into a static musl build
+# and a WASM bundle alike. Vendored alongside this crate.
+h3o = { path = "../h3o", optional = true }
+
+[dev-dependencies]
+tokio = { version = "1", features = ["macros", "rt-multi-thread"] }
+
+# Only the `flight` feature needs these, but cargo has no optional
+# build-dependencies. `build.rs` returns early when that feature is off, so the
+# protobuf compiler is built but never run for a geometry-only consumer.
+[build-dependencies]
+prost-build = "0.13"
+protoc-bin-vendored = "3"

@@ -1,0 +1,15 @@
+[package]
+name = "fleet-icons"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+serde = { workspace = true }
+serde_json = { workspace = true }
+base64 = "0.22"
+fleet = { workspace = true }
+chrono = { workspace = true }
+redis = { version = "0.25", optional = true }
+
+[features]
+redis-cache = ["redis"]

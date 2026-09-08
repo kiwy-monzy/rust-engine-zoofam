@@ -1,0 +1,13 @@
+syntax = "proto3";
+package live_trail;
+option go_package = "github.com/flightradar24-grpc/protos/live_trail";
+
+import "common.proto";
+
+message LiveTrailRequest {
+    fixed32 flight_id = 1;
+}
+
+message LiveTrailResponse {
+    repeated common.RadarHistoryRecord radar_records_list = 1;
+}

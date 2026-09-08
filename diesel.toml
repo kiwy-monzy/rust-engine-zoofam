@@ -1,0 +1,5 @@
+[print_schema]
+file = "backend/models/src/schema.rs"
+
+[migrations_directory]
+dir = "backend/migrations/postgres"
